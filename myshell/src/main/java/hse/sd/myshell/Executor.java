@@ -1,24 +1,24 @@
 package hse.sd.myshell;
 
+import hse.sd.myshell.commands.CommandOutput;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Executor {
 
-    public void executeAll(String commandSequence) throws MyShellException {
+    public CommandOutput executeAll(String commandSequence) throws MyShellException {
         CommandParser parser = new CommandParser(commandSequence);
-        ArrayList<String> currentCommand;
-        String currentOutput;
-        while (!(currentCommand = parser.getNext()).equals(Collections.EMPTY_LIST)) {
-            String commandName = currentCommand.get(0);
-            currentCommand.remove(0);
-            // todo разобраться с аргументами
-            currentOutput = commandRedirect(commandName, currentCommand);
-        }
+        ArrayList<String> commandArgs;
+        CommandOutput commandOutput;
+        commandArgs = parser.getNext();
+        String commandName = commandArgs.get(0);
+        commandArgs.remove(0);
+        commandOutput = commandRedirect(commandName, commandArgs);
+        return commandOutput;
     }
 
-    private String commandRedirect(String commandName, ArrayList<String> effectiveParameters) throws MyShellException {
+    private CommandOutput commandRedirect(String commandName, ArrayList<String> effectiveParameters) throws MyShellException {
         String className = "Command" + commandName;
         String outerClassName = "CommandOuter";
         String instanceMethodName = "execute";
@@ -26,7 +26,7 @@ public class Executor {
         String packageName = getClass().getPackage().getName() + "commands";
         String supportedPackageName = packageName + ".supported";
         Class<?> clazz = null;
-        String output = "";
+        CommandOutput output;
         try {
             clazz = Class.forName(supportedPackageName + "." + className);
         } catch (ClassNotFoundException e) {
@@ -42,7 +42,7 @@ public class Executor {
         try {
             Method method = clazz.getMethod(instanceMethodName, formalParameters);
             Object newInstance = clazz.getDeclaredConstructor().newInstance();
-             output = (String) method.invoke(newInstance, effectiveParameters); // todo: is casting ok?
+            output = (CommandOutput) method.invoke(newInstance, effectiveParameters);
         } catch (Exception e) {
             throw new MyShellException("Execution of command" + commandName + "failed");
         }
@@ -58,15 +58,27 @@ public class Executor {
         }
 
         public ArrayList<String> getNext() {
-            ArrayList<String> nextCommand = new ArrayList<>();
-            boolean singleQuote = false;
-            boolean doubleQuote = false;
-            String currentToken = "";
+            ArrayList<String> command = new ArrayList<>();
+            boolean quote = false;
+            StringBuilder currentToken = new StringBuilder();
             for (char symbol : currentRequest.toCharArray()) {
-                if (symbol == '\'') singleQuote = true;
-                if (symbol == '"') doubleQuote = true;
+                // todo: я передаю аргументы все без кавычек, если надо - добавлю
+                if (symbol == '\'' || symbol == '"') {
+                    quote = !quote;
+                    if (currentToken.length() > 0) command.add(currentToken.toString());
+                    currentToken = new StringBuilder();
+                }
+                if (quote) {
+                    currentToken.append(symbol);
+                    break;
+                }
+                if (symbol == ' ') {
+                    if (currentToken.length() > 0) command.add(currentToken.toString());
+                    currentToken = new StringBuilder();
+                    break;
+                }
             }
-            return nextCommand;
+            return command;
         }
     }
 }
