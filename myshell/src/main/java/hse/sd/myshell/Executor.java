@@ -59,6 +59,13 @@ public class Executor {
 
         public ArrayList<String> getNext() {
             ArrayList<String> nextCommand = new ArrayList<>();
+            boolean singleQuote = false;
+            boolean doubleQuote = false;
+            String currentToken = "";
+            for (char symbol : currentRequest.toCharArray()) {
+                if (symbol == '\'') singleQuote = true;
+                if (symbol == '"') doubleQuote = true;
+            }
             return nextCommand;
         }
     }
