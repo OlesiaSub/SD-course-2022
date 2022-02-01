@@ -12,10 +12,10 @@ public class Result {
     }
 
     ArrayList<String> result;
-        int exitcode;
+    int exitcode;
 
-        public Result(ArrayList<String> reslult, int exitcode) {
-            this.result = reslult;
-            this.exitcode = exitcode;
-        }
+    public Result(ArrayList<String> reslult, int exitcode) {
+        this.result = reslult;
+        this.exitcode = exitcode;
+    }
 }

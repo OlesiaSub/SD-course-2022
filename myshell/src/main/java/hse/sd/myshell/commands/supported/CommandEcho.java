@@ -23,14 +23,14 @@ public class CommandEcho implements AbstractCommand {
 
     @Override
     public void validateStaticArgs(ArrayList<String> args) {
-        if (args!= null && args.size() > 0) {
+        if (args != null && args.size() > 0) {
             staticArgs = args;
         }
     }
 
     @Override
     public void validateDinamicArgs(ArrayList<String> args) {
-        if (args!= null && args.size() > 0) {
+        if (args != null && args.size() > 0) {
             dinamicArgs = args;
         }
     }
@@ -54,6 +54,6 @@ public class CommandEcho implements AbstractCommand {
             exitcode = 1;
             return new Result(new ArrayList<>(), exitcode);
         }
-        return new Result(new ArrayList<>(Collections.singleton(result.deleteCharAt(result.length()-1).toString())), exitcode);
+        return new Result(new ArrayList<>(Collections.singleton(result.deleteCharAt(result.length() - 1).toString())), exitcode);
     }
 }
