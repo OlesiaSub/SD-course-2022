@@ -96,7 +96,7 @@ public class Executor {
                 if (symbol == '=') {
                     if (currentToken.length() > 0) command.add(currentToken.toString());
                     currentToken = new StringBuilder();
-                    command.add(0, "=");
+                    command.add(0, "assignment");
                     continue;
                 }
                 currentToken.append(symbol);
