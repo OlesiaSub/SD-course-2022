@@ -6,7 +6,7 @@ public class CommandOutput {
     private final int exitCode;
     private final ArrayList<String> output;
 
-    CommandOutput(int exitCode, ArrayList<String> output) {
+    public CommandOutput(int exitCode, ArrayList<String> output) {
         this.exitCode = exitCode;
         this.output = output;
     }

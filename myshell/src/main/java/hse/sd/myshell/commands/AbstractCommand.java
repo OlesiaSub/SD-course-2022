@@ -1,5 +1,7 @@
 package hse.sd.myshell.commands;
 
-public interface AbstractCommand {
+import java.util.ArrayList;
 
+public interface AbstractCommand {
+    CommandOutput execute(ArrayList<String> params);
 }
