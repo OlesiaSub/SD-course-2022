@@ -6,8 +6,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Executor {
+
+    private final Logger LOG = Logger.getLogger(Executor.class.getName());
 
     public CommandOutput executeAll(String commandSequence) throws MyShellException {
         CommandParser parser = new CommandParser(commandSequence);
@@ -33,8 +37,8 @@ public class Executor {
         try {
             clazz = Class.forName(supportedPackageName + "." + className);
         } catch (ClassNotFoundException e) {
-            // todo log бы сюда
-            System.err.println("Required command \"" + commandName + "\" is not supported and will be identified as an outer command");
+            LOG.log(Level.INFO, "Required command \"" + commandName +
+                    "\" is not supported and will be identified as an outer command");
         }
         if (clazz == null) {
             try {
