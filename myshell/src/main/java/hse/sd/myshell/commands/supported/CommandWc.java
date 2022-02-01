@@ -1,6 +1,7 @@
 package hse.sd.myshell.commands.supported;
 
 import hse.sd.myshell.commands.AbstractCommand;
+import hse.sd.myshell.commands.Result;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class CommandWc implements AbstractCommand {
                 long wordCount = 0;
                 try (Stream<String> stream = Files.lines(file.toPath(), StandardCharsets.UTF_8)) {
                     lineCount = stream.count();
-                    wordCount = stream.filter(Character::isSpaceChar).count();
+                    wordCount = stream.map(c -> c.chars().filter(Character::isWhitespace).count()).reduce(0L, Long::sum);
                 } catch (IOException e) {
                     exitcode = 2;
                 }

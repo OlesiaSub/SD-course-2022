@@ -1,6 +1,7 @@
 package hse.sd.myshell.commands.supported;
 
 import hse.sd.myshell.commands.AbstractCommand;
+import hse.sd.myshell.commands.Result;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class CommandCat implements AbstractCommand {
 
     @Override
     public void validateStaticArgs(ArrayList<String> args) {
+        if (args == null || args.size() == 0) return;
         staticArgs = new ArrayList<>();
         for (String file : args) {
             File f = new File(file);
@@ -36,6 +38,7 @@ public class CommandCat implements AbstractCommand {
 
     @Override
     public void validateDinamicArgs(ArrayList<String> args) {
+        if (args == null || args.size() == 0) return;
         dinamicArgs = args;
     }
 
@@ -47,6 +50,7 @@ public class CommandCat implements AbstractCommand {
 //              TODO: change to try with resources
                 try {
                     result.append(new String(Files.readAllBytes(file.toPath())));
+                    result.append('\n');
                 } catch (IOException e) {
                     exitcode = 2;
                 }
@@ -54,9 +58,11 @@ public class CommandCat implements AbstractCommand {
         } else if (dinamicArgs != null) {
             for (String string : dinamicArgs) {
                 result.append(string);
+                result.append('\n');
             }
         } else {
             exitcode = 1;
+            return new Result(new ArrayList<>(), exitcode);
         }
         return new Result(new ArrayList<>(Collections.singleton(result.toString())), exitcode);
     }
