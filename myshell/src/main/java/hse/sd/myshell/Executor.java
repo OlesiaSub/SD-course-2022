@@ -1,6 +1,7 @@
 package hse.sd.myshell;
 
 import hse.sd.myshell.commands.CommandOutput;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,7 +14,7 @@ public class Executor {
 
     private final Logger LOG = Logger.getLogger(Executor.class.getName());
 
-    public CommandOutput executeAll(String commandSequence) throws MyShellException {
+    public CommandOutput executeAll(@NotNull String commandSequence) throws MyShellException {
         CommandParser parser = new CommandParser(commandSequence);
         ArrayList<String> commandArgs;
         CommandOutput commandOutput;
@@ -24,7 +25,8 @@ public class Executor {
         return commandOutput;
     }
 
-    private CommandOutput commandRedirect(String commandName, ArrayList<String> effectiveParameters) throws MyShellException {
+    private CommandOutput commandRedirect(@NotNull String commandName, @NotNull ArrayList<String> effectiveParameters)
+            throws MyShellException {
         commandName = commandName.substring(0, 1).toUpperCase(Locale.ROOT) + commandName.substring(1).toLowerCase(Locale.ROOT);
         String className = "Command" + commandName;
         String outerClassName = "CommandOuter";
@@ -66,11 +68,11 @@ public class Executor {
 
         private String currentRequest;
 
-        CommandParser(String request) {
+        CommandParser(@NotNull String request) {
             currentRequest = request;
         }
 
-        public ArrayList<String> getNext() {
+        public @NotNull ArrayList<String> getNext() {
             ArrayList<String> command = new ArrayList<>();
             boolean quote = false;
             StringBuilder currentToken = new StringBuilder();
