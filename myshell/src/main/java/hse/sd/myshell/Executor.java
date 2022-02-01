@@ -21,17 +21,17 @@ public class Executor {
         commandArgs = parser.getNext();
         String commandName = commandArgs.get(0);
         commandArgs.remove(0);
-        commandOutput = commandRedirect(commandName, commandArgs);
+        commandOutput = commandRedirect(commandName, commandArgs, new ArrayList<>());
         return commandOutput;
     }
 
-    private CommandOutput commandRedirect(@NotNull String commandName, @NotNull ArrayList<String> effectiveParameters)
-            throws MyShellException {
+    private CommandOutput commandRedirect(@NotNull String commandName, @NotNull ArrayList<String> staticArgs,
+                                          @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
         commandName = commandName.substring(0, 1).toUpperCase(Locale.ROOT) + commandName.substring(1).toLowerCase(Locale.ROOT);
         String className = "Command" + commandName;
         String outerClassName = "CommandOuter";
         String instanceMethodName = "execute";
-        Class<?>[] formalParameters = {ArrayList.class};
+        Class<?>[] formalParameters = {ArrayList.class, ArrayList.class};
         String packageName = getClass().getPackage().getName() + ".commands";
         String supportedPackageName = packageName + ".supported";
         Class<?> clazz = null;
@@ -52,7 +52,7 @@ public class Executor {
         try {
             Method method = clazz.getMethod(instanceMethodName, formalParameters);
             Object newInstance = clazz.getDeclaredConstructor().newInstance();
-            output = (CommandOutput) method.invoke(newInstance, effectiveParameters);
+            output = (CommandOutput) method.invoke(newInstance, staticArgs, dynamicArgs);
         } catch (NoSuchMethodException e) {
             throw new MyShellException("Can not find required method of the command " + commandName);
         } catch (InstantiationException e) {
@@ -91,6 +91,12 @@ public class Executor {
                 if (symbol == ' ') {
                     if (currentToken.length() > 0) command.add(currentToken.toString());
                     currentToken = new StringBuilder();
+                    continue;
+                }
+                if (symbol == '=') {
+                    if (currentToken.length() > 0) command.add(currentToken.toString());
+                    currentToken = new StringBuilder();
+                    command.add(0, "=");
                     continue;
                 }
                 currentToken.append(symbol);

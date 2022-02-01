@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 public class CommandCat implements AbstractCommand {
     @Override
-    public CommandOutput execute(ArrayList<String> params) {
-        return new CommandOutput(0, new ArrayList<>(params));
+    public CommandOutput execute(ArrayList<String> staticArgs, ArrayList<String> dynamicArgs) {
+        return new CommandOutput(0, new ArrayList<>(staticArgs));
     }
 }

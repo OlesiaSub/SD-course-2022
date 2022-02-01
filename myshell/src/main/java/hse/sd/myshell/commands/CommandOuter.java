@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 public class CommandOuter implements AbstractCommand {
     @Override
-    public CommandOutput execute(ArrayList<String> params) {
-        return new CommandOutput(0, new ArrayList<String>(Arrays.asList("outer", "command", "execution")));
+    public CommandOutput execute(ArrayList<String> staticArgs, ArrayList<String> dynamicArgs) {
+        return new CommandOutput(0, new ArrayList<>(Arrays.asList("outer", "command", "execution")));
     }
 }
