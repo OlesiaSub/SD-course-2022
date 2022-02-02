@@ -1,6 +1,7 @@
 package hse.sd.myshell.commands.supported;
 
 import hse.sd.myshell.commands.AbstractCommand;
+import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +14,7 @@ public class CommandPwd implements AbstractCommand {
     private final ArrayList<File> staticArgs = new ArrayList<>();
     private final ArrayList<String> dynamicArgs = new ArrayList<>();
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
-    private final int exitCode = 0;
+    private ExitCode exitCode = ExitCode.OK;
 
     public CommandPwd(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
     }

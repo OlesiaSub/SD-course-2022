@@ -1,6 +1,7 @@
 package hse.sd.myshell.commands.supported;
 
 import hse.sd.myshell.commands.AbstractCommand;
+import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +17,7 @@ import java.util.stream.Stream;
 public class CommandWc implements AbstractCommand {
     private ArrayList<File> staticArgs = new ArrayList<>();
     private ArrayList<String> dynamicArgs = new ArrayList<>();
-    private int exitCode = 0;
+    private ExitCode exitCode = ExitCode.OK;
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
 
     public CommandWc(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
@@ -47,7 +48,7 @@ public class CommandWc implements AbstractCommand {
     public Result execute() {
         ArrayList<String> result = new ArrayList<>();
         if (staticArgs.size() == 0 && dynamicArgs.size() == 0) {
-            exitCode = 1;
+            exitCode = ExitCode.BAD_ARGS;
             return new Result(new ArrayList<>(), exitCode);
         }
         if (staticArgs.size() > 0) {
@@ -58,7 +59,7 @@ public class CommandWc implements AbstractCommand {
                     lineCount = stream.count();
                     wordCount = stream.map(c -> c.chars().filter(Character::isWhitespace).count()).reduce(0L, Long::sum);
                 } catch (IOException e) {
-                    exitCode = 2;
+                    exitCode = ExitCode.UKNOWN_PROBLEM;
                 }
                 result.add(String.valueOf(lineCount) + ' ' + wordCount + ' ' + file.length() + ' ' + file.getPath());
             }

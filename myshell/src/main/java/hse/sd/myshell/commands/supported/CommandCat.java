@@ -1,6 +1,7 @@
 package hse.sd.myshell.commands.supported;
 
 import hse.sd.myshell.commands.AbstractCommand;
+import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
 public class CommandCat implements AbstractCommand {
     private ArrayList<File> staticArgs = new ArrayList<>();
     private ArrayList<String> dynamicArgs = new ArrayList<>();
-    private int exitCode = 0;
+    private ExitCode exitCode = ExitCode.OK;
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
 
     public CommandCat(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
@@ -53,7 +54,7 @@ public class CommandCat implements AbstractCommand {
                 try {
                     result.append(new String(Files.readAllBytes(file.toPath())) + '\n');
                 } catch (IOException e) {
-                    exitCode = 2;
+                    exitCode = ExitCode.UKNOWN_PROBLEM;
                 }
             }
         } else if (dynamicArgs.size() > 0) {
@@ -61,7 +62,7 @@ public class CommandCat implements AbstractCommand {
                 result.append(str + '\n');
             }
         } else {
-            exitCode = 1;
+            exitCode = ExitCode.BAD_ARGS;
             return new Result(new ArrayList<>(), exitCode);
         }
         return new Result(new ArrayList<>(Collections.singleton(result.toString())), exitCode);

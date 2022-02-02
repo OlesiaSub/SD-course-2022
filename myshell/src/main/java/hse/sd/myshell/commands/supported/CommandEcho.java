@@ -1,6 +1,7 @@
 package hse.sd.myshell.commands.supported;
 
 import hse.sd.myshell.commands.AbstractCommand;
+import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +13,7 @@ public class CommandEcho implements AbstractCommand {
     private ArrayList<String> staticArgs = new ArrayList<>();
     private ArrayList<String> dynamicArgs = new ArrayList<>();
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
-    private int exitCode = 0;
+    private ExitCode exitCode = ExitCode.OK;
 
     public CommandEcho(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
         validateStaticArgs(staticArgs);
@@ -39,7 +40,7 @@ public class CommandEcho implements AbstractCommand {
         StringBuilder result = new StringBuilder();
         if ((staticArgs.size() > 0 && dynamicArgs.size() > 0)
                 || (staticArgs.size() == 0 && dynamicArgs.size() == 0)) {
-            exitCode = 1;
+            exitCode = ExitCode.BAD_ARGS;
             return new Result(new ArrayList<>(), exitCode);
         }
         if (staticArgs.size() > 0) {
