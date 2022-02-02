@@ -18,7 +18,7 @@ public class CommandAssignment implements AbstractCommand {
 
     public CommandAssignment(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
         validateStaticArgs(staticArgs);
-        validatedynamicArgs(dynamicArgs);
+        validateDynamicArgs(dynamicArgs);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CommandAssignment implements AbstractCommand {
     }
 
     @Override
-    public void validatedynamicArgs(@NotNull ArrayList<String> args) {
+    public void validateDynamicArgs(@NotNull ArrayList<String> args) {
         if (args.size() > 0) {
             exitCode = ExitCode.BAD_ARGS;
             logger.log(Level.WARNING, "Dynamic arguments in Assignment: " + String.join(", ", args));

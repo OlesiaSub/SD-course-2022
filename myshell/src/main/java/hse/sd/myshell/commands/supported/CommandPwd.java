@@ -24,7 +24,7 @@ public class CommandPwd implements AbstractCommand {
     }
 
     @Override
-    public void validatedynamicArgs(@NotNull ArrayList<String> args) {
+    public void validateDynamicArgs(@NotNull ArrayList<String> args) {
     }
 
     @Override

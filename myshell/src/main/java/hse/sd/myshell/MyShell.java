@@ -11,16 +11,20 @@ public class MyShell {
 
     private static final Logger LOG = Logger.getLogger(MyShell.class.getName());
 
-    public static void main(String[] args) throws MyShellException, InterruptedException {
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Executor executor = new Executor();
         while (true) {
-            System.out.print(">> ");
             String commandSequence = scanner.nextLine();
-            Result output = executor.executeAll(commandSequence);
+            Result output;
+            try {
+                output = executor.executeAll(commandSequence);
+            } catch (MyShellException e) {
+                LOG.log(Level.WARNING, e.getMessage());
+                continue;
+            }
             if (output.getExitCode() != ExitCode.OK) {
                 LOG.log(Level.WARNING, "Execution finished with exit code " + output.getExitCode());
-                Thread.sleep(50);
                 continue;
             }
             LOG.log(Level.INFO, "Execution finished with exit code " + output.getExitCode());

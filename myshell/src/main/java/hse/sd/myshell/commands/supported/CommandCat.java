@@ -21,7 +21,7 @@ public class CommandCat implements AbstractCommand {
 
     public CommandCat(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
         validateStaticArgs(staticArgs);
-        validatedynamicArgs(dynamicArgs);
+        validateDynamicArgs(dynamicArgs);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class CommandCat implements AbstractCommand {
     }
 
     @Override
-    public void validatedynamicArgs(@NotNull ArrayList<String> args) {
+    public void validateDynamicArgs(@NotNull ArrayList<String> args) {
         if (args.size() == 0) return;
         dynamicArgs = args;
     }

@@ -77,7 +77,6 @@ public class Executor {
             boolean quote = false;
             StringBuilder currentToken = new StringBuilder();
             for (char symbol : currentRequest.toCharArray()) {
-                // todo: я передаю все аргументы без кавычек, если надо - добавлю
                 if (symbol == '\'' || symbol == '"') {
                     quote = !quote;
                     if (currentToken.length() > 0) command.add(currentToken.toString());

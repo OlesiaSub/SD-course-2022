@@ -18,7 +18,7 @@ public class CommandEcho implements AbstractCommand {
 
     public CommandEcho(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
         validateStaticArgs(staticArgs);
-        validatedynamicArgs(dynamicArgs);
+        validateDynamicArgs(dynamicArgs);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class CommandEcho implements AbstractCommand {
     }
 
     @Override
-    public void validatedynamicArgs(@NotNull ArrayList<String> args) {
+    public void validateDynamicArgs(@NotNull ArrayList<String> args) {
         if (args.size() > 0) {
             dynamicArgs = args;
         }
