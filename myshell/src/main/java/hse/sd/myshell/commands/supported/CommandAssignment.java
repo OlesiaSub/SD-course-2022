@@ -3,23 +3,24 @@ package hse.sd.myshell.commands.supported;
 import hse.sd.myshell.Environment;
 import hse.sd.myshell.commands.AbstractCommand;
 import hse.sd.myshell.commands.Result;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class CommandAssignment implements AbstractCommand {
-    private ArrayList<String> staticArgs = null;
-    private ArrayList<String> dinamicArgs = null;
+    private ArrayList<String> staticArgs = new ArrayList<>();
+    private ArrayList<String> dynamicArgs = new ArrayList<>();
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
     private int exitcode = 0;
 
-    public CommandAssignment(ArrayList<String> staticArgs, ArrayList<String> dinamicArgs) {
+    public CommandAssignment(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
         validateStaticArgs(staticArgs);
-        validateDinamicArgs(dinamicArgs);
+        validatedynamicArgs(dynamicArgs);
     }
 
     @Override
-    public void validateStaticArgs(ArrayList<String> args) {
+    public void validateStaticArgs(@NotNull ArrayList<String> args) {
         if (args.size() != 2) {
             exitcode = 1;
             return;
@@ -28,17 +29,18 @@ public class CommandAssignment implements AbstractCommand {
     }
 
     @Override
-    public void validateDinamicArgs(ArrayList<String> args) {
-        if (args != null) {
+    public void validatedynamicArgs(@NotNull ArrayList<String> args) {
+        if (args.size() > 0) {
             exitcode = 1;
         }
     }
 
     @Override
+    @NotNull
     public Result execute() {
-        if (staticArgs != null && dinamicArgs == null) {
+        if (staticArgs.size() > 0 && dynamicArgs.size() == 0) {
             Environment.setVariableValue(staticArgs.get(0), staticArgs.get(1));
         }
-        return new Result(null, exitcode);
+        return new Result(new ArrayList<>(), exitcode);
     }
 }

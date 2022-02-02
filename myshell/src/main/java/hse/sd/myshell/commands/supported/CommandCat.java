@@ -2,6 +2,7 @@ package hse.sd.myshell.commands.supported;
 
 import hse.sd.myshell.commands.AbstractCommand;
 import hse.sd.myshell.commands.Result;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,19 +13,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CommandCat implements AbstractCommand {
-    private ArrayList<File> staticArgs = null;
-    private ArrayList<String> dinamicArgs = null;
+    private ArrayList<File> staticArgs = new ArrayList<>();
+    private ArrayList<String> dynamicArgs = new ArrayList<>();
     private int exitcode = 0;
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
 
-    public CommandCat(ArrayList<String> staticArgs, ArrayList<String> dinamicArgs) {
+    public CommandCat(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
         validateStaticArgs(staticArgs);
-        validateDinamicArgs(dinamicArgs);
+        validatedynamicArgs(dynamicArgs);
     }
 
     @Override
-    public void validateStaticArgs(ArrayList<String> args) {
-        if (args == null || args.size() == 0) return;
+    public void validateStaticArgs(@NotNull ArrayList<String> args) {
+        if (args.size() == 0) return;
         staticArgs = new ArrayList<>();
         for (String file : args) {
             File f = new File(file);
@@ -37,15 +38,16 @@ public class CommandCat implements AbstractCommand {
     }
 
     @Override
-    public void validateDinamicArgs(ArrayList<String> args) {
-        if (args == null || args.size() == 0) return;
-        dinamicArgs = args;
+    public void validatedynamicArgs(@NotNull ArrayList<String> args) {
+        if (args.size() == 0) return;
+        dynamicArgs = args;
     }
 
     @Override
+    @NotNull
     public Result execute() {
         StringBuilder result = new StringBuilder();
-        if (staticArgs != null) {
+        if (staticArgs.size() > 0) {
             for (File file : staticArgs) {
 //              TODO: change to try with resources
                 try {
@@ -55,8 +57,8 @@ public class CommandCat implements AbstractCommand {
                     exitcode = 2;
                 }
             }
-        } else if (dinamicArgs != null) {
-            for (String string : dinamicArgs) {
+        } else if (dynamicArgs.size() > 0) {
+            for (String string : dynamicArgs) {
                 result.append(string);
                 result.append('\n');
             }

@@ -2,6 +2,7 @@ package hse.sd.myshell.commands.supported;
 
 import hse.sd.myshell.commands.AbstractCommand;
 import hse.sd.myshell.commands.Result;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,18 +14,18 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class CommandWc implements AbstractCommand {
-    private ArrayList<File> staticArgs = null;
-    private ArrayList<String> dinamicArgs = null;
+    private ArrayList<File> staticArgs = new ArrayList<>();
+    private ArrayList<String> dynamicArgs = new ArrayList<>();
     private int exitcode = 0;
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
 
-    public CommandWc(ArrayList<String> staticArgs, ArrayList<String> dinamicArgs) {
+    public CommandWc(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
         validateStaticArgs(staticArgs);
-        validateDinamicArgs(dinamicArgs);
+        validatedynamicArgs(dynamicArgs);
     }
 
     @Override
-    public void validateStaticArgs(ArrayList<String> args) {
+    public void validateStaticArgs(@NotNull ArrayList<String> args) {
         staticArgs = new ArrayList<>();
         for (String file : args) {
             File f = new File(file);
@@ -37,14 +38,19 @@ public class CommandWc implements AbstractCommand {
     }
 
     @Override
-    public void validateDinamicArgs(ArrayList<String> args) {
-        dinamicArgs = args;
+    public void validatedynamicArgs(@NotNull ArrayList<String> args) {
+        dynamicArgs = args;
     }
 
     @Override
+    @NotNull
     public Result execute() {
         ArrayList<String> result = new ArrayList<>();
-        if (staticArgs != null) {
+        if (staticArgs.size() == 0 && dynamicArgs.size() == 0) {
+            exitcode = 1;
+            return new Result(new ArrayList<>(), exitcode);
+        }
+        if (staticArgs.size() > 0) {
             for (File file : staticArgs) {
                 long lineCount = 0;
                 long wordCount = 0;
@@ -56,12 +62,10 @@ public class CommandWc implements AbstractCommand {
                 }
                 result.add(String.valueOf(lineCount) + ' ' + wordCount + ' ' + file.length() + ' ' + file.getPath());
             }
-        } else if (dinamicArgs != null) {
-            for (String string : dinamicArgs) {
+        } else {
+            for (String string : dynamicArgs) {
                 result.add("1 1 " + string.getBytes().length + "\n");
             }
-        } else {
-            exitcode = 1;
         }
         return new Result(result, exitcode);
     }
