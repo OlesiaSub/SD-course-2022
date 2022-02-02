@@ -125,23 +125,23 @@ public class CommandsTest {
 
     @Test
     public void testCatStaticArgs() {
-        cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + '\\' + "test_file1.txt")), new ArrayList<>());
+        cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")), new ArrayList<>());
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertEquals(new ArrayList<>(List.of("content of test file\n")), result.getResult());
     }
 
     @Test
-    public void testCatdynamicArgs() {
-        cat = new CommandCat(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + '\\' + "test_file1.txt")));
+    public void testCatDynamicArgs() {
+        cat = new CommandCat(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(new ArrayList<>(List.of(temporaryFolder.getPath() + '\\' + "test_file1.txt\n")), result.getResult());
+        Assertions.assertEquals(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt\n")), result.getResult());
     }
 
     @Test
     public void testCatMultipleStaticArgs() {
-        cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + '\\' + "test_file1.txt", temporaryFolder.getPath() + '\\' + "test_file2.txt")), new ArrayList<>());
+        cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>());
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertEquals(new ArrayList<>(List.of("content of test file\nlong content of other test file\n")), result.getResult());
@@ -149,15 +149,15 @@ public class CommandsTest {
 
     @Test
     public void testCatMultipledynamicArgs() {
-        cat = new CommandCat(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + '\\' + "test_file1.txt", temporaryFolder.getPath() + '\\' + "test_file2.txt")));
+        cat = new CommandCat(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(new ArrayList<>(List.of(temporaryFolder.getPath() + '\\' + "test_file1.txt\n" + temporaryFolder.getPath() + '\\' + "test_file2.txt\n")), result.getResult());
+        Assertions.assertEquals(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt\n" + temporaryFolder.getPath() + File.separator + "test_file2.txt\n")), result.getResult());
     }
 
     @Test
     public void testCatdynamicAndStaticArgs() {
-        cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + '\\' + "test_file1.txt", temporaryFolder.getPath() + '\\' + "test_file2.txt")), new ArrayList<>(List.of(temporaryFolder.getPath() + '\\' + "test_file1.txt", temporaryFolder.getPath() + '\\' + "test_file2.txt")));
+        cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertEquals(new ArrayList<>(List.of("content of test file\nlong content of other test file\n")), result.getResult());
