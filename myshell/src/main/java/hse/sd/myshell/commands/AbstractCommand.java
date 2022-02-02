@@ -9,4 +9,3 @@ public interface AbstractCommand {
 
     Result execute();
 }
-
