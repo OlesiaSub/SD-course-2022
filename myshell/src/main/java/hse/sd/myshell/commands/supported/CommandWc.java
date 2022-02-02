@@ -53,7 +53,7 @@ public class CommandWc implements AbstractCommand {
         ArrayList<String> result = new ArrayList<>();
         if (staticArgs.size() == 0 && dynamicArgs.size() == 0) {
             exitCode = ExitCode.BAD_ARGS;
-            logger.log(Level.WARNING, "No arguments in wc");
+            logger.log(Level.WARNING, "Incorrect arguments in wc command");
             return new Result(new ArrayList<>(), exitCode);
         }
         if (staticArgs.size() > 0) {
