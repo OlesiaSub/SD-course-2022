@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class CommandCat implements AbstractCommand {
     private ArrayList<File> staticArgs = new ArrayList<>();
     private ArrayList<String> dynamicArgs = new ArrayList<>();
-    private int exitcode = 0;
+    private int exitCode = 0;
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
 
     public CommandCat(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
@@ -30,7 +30,7 @@ public class CommandCat implements AbstractCommand {
         for (String file : args) {
             File f = new File(file);
             if (!f.exists() || f.isDirectory()) {
-                logger.log(Level.WARNING, "File is not exist: " + file);
+                logger.log(Level.WARNING, "File does not exist: " + file);
                 continue;
             }
             staticArgs.add(f);
@@ -51,21 +51,19 @@ public class CommandCat implements AbstractCommand {
             for (File file : staticArgs) {
 //              TODO: change to try with resources
                 try {
-                    result.append(new String(Files.readAllBytes(file.toPath())));
-                    result.append('\n');
+                    result.append(new String(Files.readAllBytes(file.toPath())) + '\n');
                 } catch (IOException e) {
-                    exitcode = 2;
+                    exitCode = 2;
                 }
             }
         } else if (dynamicArgs.size() > 0) {
-            for (String string : dynamicArgs) {
-                result.append(string);
-                result.append('\n');
+            for (String str : dynamicArgs) {
+                result.append(str + '\n');
             }
         } else {
-            exitcode = 1;
-            return new Result(new ArrayList<>(), exitcode);
+            exitCode = 1;
+            return new Result(new ArrayList<>(), exitCode);
         }
-        return new Result(new ArrayList<>(Collections.singleton(result.toString())), exitcode);
+        return new Result(new ArrayList<>(Collections.singleton(result.toString())), exitCode);
     }
 }

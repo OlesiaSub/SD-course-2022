@@ -12,7 +12,7 @@ public class CommandEcho implements AbstractCommand {
     private ArrayList<String> staticArgs = new ArrayList<>();
     private ArrayList<String> dynamicArgs = new ArrayList<>();
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
-    private int exitcode = 0;
+    private int exitCode = 0;
 
     public CommandEcho(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
         validateStaticArgs(staticArgs);
@@ -39,8 +39,8 @@ public class CommandEcho implements AbstractCommand {
         StringBuilder result = new StringBuilder();
         if ((staticArgs.size() > 0 && dynamicArgs.size() > 0)
                 || (staticArgs.size() == 0 && dynamicArgs.size() == 0)) {
-            exitcode = 1;
-            return new Result(new ArrayList<>(), exitcode);
+            exitCode = 1;
+            return new Result(new ArrayList<>(), exitCode);
         }
         if (staticArgs.size() > 0) {
             for (String str : staticArgs) {
@@ -51,6 +51,6 @@ public class CommandEcho implements AbstractCommand {
                 result.append(str + ' ');
             }
         }
-        return new Result(new ArrayList<>(Collections.singleton(result.deleteCharAt(result.length() - 1).toString())), exitcode);
+        return new Result(new ArrayList<>(Collections.singleton(result.deleteCharAt(result.length() - 1).toString())), exitCode);
     }
 }

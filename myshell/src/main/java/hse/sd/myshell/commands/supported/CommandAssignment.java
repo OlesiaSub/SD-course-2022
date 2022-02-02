@@ -12,7 +12,7 @@ public class CommandAssignment implements AbstractCommand {
     private ArrayList<String> staticArgs = new ArrayList<>();
     private ArrayList<String> dynamicArgs = new ArrayList<>();
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
-    private int exitcode = 0;
+    private int exitCode = 0;
 
     public CommandAssignment(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
         validateStaticArgs(staticArgs);
@@ -22,7 +22,7 @@ public class CommandAssignment implements AbstractCommand {
     @Override
     public void validateStaticArgs(@NotNull ArrayList<String> args) {
         if (args.size() != 2) {
-            exitcode = 1;
+            exitCode = 1;
             return;
         }
         staticArgs = args;
@@ -31,7 +31,7 @@ public class CommandAssignment implements AbstractCommand {
     @Override
     public void validatedynamicArgs(@NotNull ArrayList<String> args) {
         if (args.size() > 0) {
-            exitcode = 1;
+            exitCode = 1;
         }
     }
 
@@ -41,6 +41,6 @@ public class CommandAssignment implements AbstractCommand {
         if (staticArgs.size() > 0 && dynamicArgs.size() == 0) {
             Environment.setVariableValue(staticArgs.get(0), staticArgs.get(1));
         }
-        return new Result(new ArrayList<>(), exitcode);
+        return new Result(new ArrayList<>(), exitCode);
     }
 }

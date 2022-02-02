@@ -13,7 +13,7 @@ public class CommandPwd implements AbstractCommand {
     private final ArrayList<File> staticArgs = new ArrayList<>();
     private final ArrayList<String> dynamicArgs = new ArrayList<>();
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
-    private final int exitcode = 0;
+    private final int exitCode = 0;
 
     public CommandPwd(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
     }
@@ -29,6 +29,6 @@ public class CommandPwd implements AbstractCommand {
     @Override
     @NotNull
     public Result execute() {
-        return new Result(new ArrayList<>(Collections.singleton(System.getProperty("user.dir"))), exitcode);
+        return new Result(new ArrayList<>(Collections.singleton(System.getProperty("user.dir"))), exitCode);
     }
 }

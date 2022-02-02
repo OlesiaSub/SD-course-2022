@@ -5,19 +5,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 public class Result {
-    ArrayList<String> result;
-    int exitcode;
+    private final ArrayList<String> result;
+    private final int exitCode;
 
-    public Result(@NotNull ArrayList<String> reslult, int exitcode) {
+    public Result(@NotNull ArrayList<String> reslult, int exitCode) {
         this.result = reslult;
-        this.exitcode = exitcode;
+        this.exitCode = exitCode;
     }
 
     public ArrayList<String> getResult() {
         return result;
     }
 
-    public int getExitcode() {
-        return exitcode;
+    public int getExitCode() {
+        return exitCode;
     }
 }

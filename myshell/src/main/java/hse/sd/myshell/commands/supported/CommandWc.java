@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 public class CommandWc implements AbstractCommand {
     private ArrayList<File> staticArgs = new ArrayList<>();
     private ArrayList<String> dynamicArgs = new ArrayList<>();
-    private int exitcode = 0;
+    private int exitCode = 0;
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
 
     public CommandWc(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
@@ -30,7 +30,7 @@ public class CommandWc implements AbstractCommand {
         for (String file : args) {
             File f = new File(file);
             if (!f.exists() || f.isDirectory()) {
-                logger.log(Level.WARNING, "File is not exist: " + file);
+                logger.log(Level.WARNING, "File does not exist: " + file);
                 continue;
             }
             staticArgs.add(f);
@@ -47,8 +47,8 @@ public class CommandWc implements AbstractCommand {
     public Result execute() {
         ArrayList<String> result = new ArrayList<>();
         if (staticArgs.size() == 0 && dynamicArgs.size() == 0) {
-            exitcode = 1;
-            return new Result(new ArrayList<>(), exitcode);
+            exitCode = 1;
+            return new Result(new ArrayList<>(), exitCode);
         }
         if (staticArgs.size() > 0) {
             for (File file : staticArgs) {
@@ -58,7 +58,7 @@ public class CommandWc implements AbstractCommand {
                     lineCount = stream.count();
                     wordCount = stream.map(c -> c.chars().filter(Character::isWhitespace).count()).reduce(0L, Long::sum);
                 } catch (IOException e) {
-                    exitcode = 2;
+                    exitCode = 2;
                 }
                 result.add(String.valueOf(lineCount) + ' ' + wordCount + ' ' + file.length() + ' ' + file.getPath());
             }
@@ -67,6 +67,6 @@ public class CommandWc implements AbstractCommand {
                 result.add("1 1 " + string.getBytes().length + "\n");
             }
         }
-        return new Result(result, exitcode);
+        return new Result(result, exitCode);
     }
 }
