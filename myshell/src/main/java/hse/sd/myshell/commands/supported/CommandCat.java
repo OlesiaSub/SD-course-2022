@@ -1,7 +1,6 @@
 package hse.sd.myshell.commands.supported;
 
 import hse.sd.myshell.commands.AbstractCommand;
-<<<<<<< HEAD
 import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
@@ -67,16 +66,5 @@ public class CommandCat implements AbstractCommand {
             return new Result(new ArrayList<>(), exitCode);
         }
         return new Result(new ArrayList<>(Collections.singleton(result.toString())), exitCode);
-=======
-import hse.sd.myshell.commands.CommandOutput;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
-public class CommandCat implements AbstractCommand {
-    @Override
-    public CommandOutput execute(ArrayList<String> staticArgs, ArrayList<String> dynamicArgs) {
-        return new CommandOutput(0, new ArrayList<>(staticArgs));
->>>>>>> myshell
     }
 }
