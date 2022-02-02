@@ -50,11 +50,11 @@ public class CommandCat implements AbstractCommand {
         StringBuilder result = new StringBuilder();
         if (staticArgs.size() > 0) {
             for (File file : staticArgs) {
-//              TODO: change to try with resources
                 try {
                     result.append(new String(Files.readAllBytes(file.toPath())) + '\n');
                 } catch (IOException e) {
-                    exitCode = ExitCode.UKNOWN_PROBLEM;
+                    exitCode = ExitCode.UNKNOWN_PROBLEM;
+                    logger.log(Level.WARNING, "Unknown problem with file: " + e.getMessage());
                 }
             }
         } else if (dynamicArgs.size() > 0) {

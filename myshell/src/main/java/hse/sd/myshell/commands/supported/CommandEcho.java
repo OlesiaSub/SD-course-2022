@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CommandEcho implements AbstractCommand {
@@ -41,6 +42,7 @@ public class CommandEcho implements AbstractCommand {
         if ((staticArgs.size() > 0 && dynamicArgs.size() > 0)
                 || (staticArgs.size() == 0 && dynamicArgs.size() == 0)) {
             exitCode = ExitCode.BAD_ARGS;
+            logger.log(Level.WARNING, "Bad arguments in echo (static: " + String.join(", ", staticArgs) + ", dynamic: " + String.join(", ", staticArgs) + ")");
             return new Result(new ArrayList<>(), exitCode);
         }
         if (staticArgs.size() > 0) {

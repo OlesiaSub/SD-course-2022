@@ -49,6 +49,7 @@ public class CommandWc implements AbstractCommand {
         ArrayList<String> result = new ArrayList<>();
         if (staticArgs.size() == 0 && dynamicArgs.size() == 0) {
             exitCode = ExitCode.BAD_ARGS;
+            logger.log(Level.WARNING, "No arguments in wc");
             return new Result(new ArrayList<>(), exitCode);
         }
         if (staticArgs.size() > 0) {
@@ -59,7 +60,8 @@ public class CommandWc implements AbstractCommand {
                     lineCount = stream.count();
                     wordCount = stream.map(c -> c.chars().filter(Character::isWhitespace).count()).reduce(0L, Long::sum);
                 } catch (IOException e) {
-                    exitCode = ExitCode.UKNOWN_PROBLEM;
+                    exitCode = ExitCode.UNKNOWN_PROBLEM;
+                    logger.log(Level.WARNING, "Unknown problem with file: " + e.getMessage());
                 }
                 result.add(String.valueOf(lineCount) + ' ' + wordCount + ' ' + file.length() + ' ' + file.getPath());
             }

@@ -7,11 +7,12 @@ import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CommandAssignment implements AbstractCommand {
     private ArrayList<String> staticArgs = new ArrayList<>();
-    private ArrayList<String> dynamicArgs = new ArrayList<>();
+    private final ArrayList<String> dynamicArgs = new ArrayList<>();
     private final Logger logger = Logger.getLogger(CommandCat.class.getName());
     private ExitCode exitCode = ExitCode.OK;
 
@@ -24,6 +25,7 @@ public class CommandAssignment implements AbstractCommand {
     public void validateStaticArgs(@NotNull ArrayList<String> args) {
         if (args.size() != 2) {
             exitCode = ExitCode.BAD_ARGS;
+            logger.log(Level.WARNING, "More than 2 static arguments in Assignment: " + String.join(", ", args));
             return;
         }
         staticArgs = args;
@@ -33,6 +35,8 @@ public class CommandAssignment implements AbstractCommand {
     public void validatedynamicArgs(@NotNull ArrayList<String> args) {
         if (args.size() > 0) {
             exitCode = ExitCode.BAD_ARGS;
+            logger.log(Level.WARNING, "Dynamic arguments in Assignment: " + String.join(", ", args));
+
         }
     }
 
