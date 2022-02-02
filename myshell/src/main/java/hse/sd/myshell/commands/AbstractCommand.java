@@ -3,5 +3,9 @@ package hse.sd.myshell.commands;
 import java.util.ArrayList;
 
 public interface AbstractCommand {
-    CommandOutput execute(ArrayList<String> staticArgs, ArrayList<String> dynamicArgs);
+    void validateStaticArgs(ArrayList<String> args);
+
+    void validatedynamicArgs(ArrayList<String> args);
+
+    Result execute();
 }

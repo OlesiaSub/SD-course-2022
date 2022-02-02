@@ -1,6 +1,6 @@
 package hse.sd.myshell;
 
-import hse.sd.myshell.commands.CommandOutput;
+import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -14,18 +14,18 @@ public class Executor {
 
     private final Logger LOG = Logger.getLogger(Executor.class.getName());
 
-    public CommandOutput executeAll(@NotNull String commandSequence) throws MyShellException {
+    public Result executeAll(@NotNull String commandSequence) throws MyShellException {
         CommandParser parser = new CommandParser(commandSequence);
         ArrayList<String> commandArgs;
-        CommandOutput commandOutput;
+        Result Result;
         commandArgs = parser.getNext();
         String commandName = commandArgs.get(0);
         commandArgs.remove(0);
-        commandOutput = commandRedirect(commandName, commandArgs, new ArrayList<>());
-        return commandOutput;
+        Result = commandRedirect(commandName, commandArgs, new ArrayList<>());
+        return Result;
     }
 
-    private CommandOutput commandRedirect(@NotNull String commandName, @NotNull ArrayList<String> staticArgs,
+    private Result commandRedirect(@NotNull String commandName, @NotNull ArrayList<String> staticArgs,
                                           @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
         commandName = commandName.substring(0, 1).toUpperCase(Locale.ROOT) + commandName.substring(1).toLowerCase(Locale.ROOT);
         String className = "Command" + commandName;
@@ -35,7 +35,7 @@ public class Executor {
         String packageName = getClass().getPackage().getName() + ".commands";
         String supportedPackageName = packageName + ".supported";
         Class<?> clazz = null;
-        CommandOutput output;
+        Result output;
         try {
             clazz = Class.forName(supportedPackageName + "." + className);
         } catch (ClassNotFoundException e) {
@@ -52,7 +52,7 @@ public class Executor {
         try {
             Method method = clazz.getMethod(instanceMethodName, formalParameters);
             Object newInstance = clazz.getDeclaredConstructor().newInstance();
-            output = (CommandOutput) method.invoke(newInstance, staticArgs, dynamicArgs);
+            output = (Result) method.invoke(newInstance, staticArgs, dynamicArgs);
         } catch (NoSuchMethodException e) {
             throw new MyShellException("Can not find required method of the command " + commandName);
         } catch (InstantiationException e) {

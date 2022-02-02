@@ -1,6 +1,7 @@
 package hse.sd.myshell;
 
-import hse.sd.myshell.commands.CommandOutput;
+import hse.sd.myshell.commands.ExitCode;
+import hse.sd.myshell.commands.Result;
 
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -16,14 +17,14 @@ public class MyShell {
         while (true) {
             System.out.print(">> ");
             String commandSequence = scanner.nextLine();
-            CommandOutput output = executor.executeAll(commandSequence);
-            if (output.getExitCode() != 0) {
+            Result output = executor.executeAll(commandSequence);
+            if (output.getExitCode() != ExitCode.OK) {
                 LOG.log(Level.WARNING, "Execution finished with exit code " + output.getExitCode());
                 Thread.sleep(50);
                 continue;
             }
             LOG.log(Level.INFO, "Execution finished with exit code " + output.getExitCode());
-            System.out.println("output: " + output.getOutput());
+            System.out.println("output: " + output.getResult());
         }
     }
 }
