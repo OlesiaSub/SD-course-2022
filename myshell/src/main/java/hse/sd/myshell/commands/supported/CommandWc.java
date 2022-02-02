@@ -10,8 +10,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandWc implements AbstractCommand {
@@ -56,9 +60,10 @@ public class CommandWc implements AbstractCommand {
             for (File file : staticArgs) {
                 long lineCount = 0;
                 long wordCount = 0;
-                try (Stream<String> stream = Files.lines(file.toPath(), StandardCharsets.UTF_8)) {
+                try (Stream<String> stream = Files.lines(file.toPath(), StandardCharsets.UTF_8);
+                     Stream<String> wcStream = Files.lines(file.toPath(), StandardCharsets.UTF_8)) {
                     lineCount = stream.count();
-                    wordCount = stream.map(c -> c.chars().filter(Character::isWhitespace).count()).reduce(0L, Long::sum);
+                    wordCount = wcStream.map(c -> c.chars().filter(Character::isWhitespace).count()).reduce(0L, Long::sum);
                 } catch (IOException e) {
                     exitCode = ExitCode.UNKNOWN_PROBLEM;
                     logger.log(Level.WARNING, "Unknown problem with file: " + e.getMessage());

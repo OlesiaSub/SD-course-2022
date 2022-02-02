@@ -50,9 +50,9 @@ public class Executor {
             }
         }
         try {
-            Method method = clazz.getMethod(instanceMethodName, formalParameters);
-            Object newInstance = clazz.getDeclaredConstructor().newInstance();
-            output = (Result) method.invoke(newInstance, staticArgs, dynamicArgs);
+            Object newInstance = clazz.getDeclaredConstructor(formalParameters).newInstance(staticArgs, dynamicArgs);
+            Method method = clazz.getMethod(instanceMethodName);
+            output = (Result) method.invoke(newInstance);
         } catch (NoSuchMethodException e) {
             throw new MyShellException("Can not find required method of the command " + commandName);
         } catch (InstantiationException e) {

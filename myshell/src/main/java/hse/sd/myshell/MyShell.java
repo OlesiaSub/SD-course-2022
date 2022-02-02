@@ -24,7 +24,9 @@ public class MyShell {
                 continue;
             }
             LOG.log(Level.INFO, "Execution finished with exit code " + output.getExitCode());
-            System.out.println("output: " + output.getResult());
+            for (String res : output.getResult()) {
+                System.out.println(res);
+            }
         }
     }
 }
