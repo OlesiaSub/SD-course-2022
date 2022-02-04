@@ -21,6 +21,7 @@ public class CommandsTest {
     public CommandWc wc;
     public CommandPwd pwd;
     public CommandAssignment assignment;
+    public CommandExit exit;
 
     @TempDir
     File temporaryFolder;
@@ -124,6 +125,86 @@ public class CommandsTest {
     }
 
     @Test
+    public void testWcStaticArgs() {
+        wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")), new ArrayList<>());
+        Result result = wc.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(1, result.getResult().size());
+        String[] res = result.getResult().get(0).split(" ");
+        Assertions.assertEquals("1", res[0]);
+        Assertions.assertEquals("3", res[1]);
+        Assertions.assertEquals("20", res[2]);
+    }
+
+    @Test
+    public void testWcDynamicArgs() {
+        wc = new CommandWc(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
+        Result result = wc.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(1, result.getResult().size());
+        String[] res = result.getResult().get(0).split(" ");
+        Assertions.assertEquals("1", res[0]);
+        Assertions.assertEquals("1", res[1]);
+        Assertions.assertEquals("73\n", res[2]);
+    }
+
+    @Test
+    public void testWcMultipleStaticArgs() {
+        wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>());
+        Result result = wc.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(2, result.getResult().size());
+        String[] res = result.getResult().get(0).split(" ");
+        Assertions.assertEquals("1", res[0]);
+        Assertions.assertEquals("3", res[1]);
+        Assertions.assertEquals("20", res[2]);
+        res = result.getResult().get(1).split(" ");
+        Assertions.assertEquals("1", res[0]);
+        Assertions.assertEquals("5", res[1]);
+        Assertions.assertEquals("31", res[2]);
+    }
+
+    @Test
+    public void testWcMultipledynamicArgs() {
+        wc = new CommandWc(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")));
+        Result result = wc.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(2, result.getResult().size());
+        String[] res = result.getResult().get(0).split(" ");
+        Assertions.assertEquals("1", res[0]);
+        Assertions.assertEquals("1", res[1]);
+        Assertions.assertEquals("73\n", res[2]);
+        res = result.getResult().get(1).split(" ");
+        Assertions.assertEquals("1", res[0]);
+        Assertions.assertEquals("1", res[1]);
+        Assertions.assertEquals("73\n", res[2]);
+    }
+
+    @Test
+    public void testWcDynamicAndStaticArgs() {
+        wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")));
+        Result result = wc.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(2, result.getResult().size());
+        String[] res = result.getResult().get(0).split(" ");
+        Assertions.assertEquals("1", res[0]);
+        Assertions.assertEquals("3", res[1]);
+        Assertions.assertEquals("20", res[2]);
+        res = result.getResult().get(1).split(" ");
+        Assertions.assertEquals("1", res[0]);
+        Assertions.assertEquals("5", res[1]);
+        Assertions.assertEquals("31", res[2]);
+    }
+
+    @Test
+    public void testWcNoArgs() {
+        wc = new CommandWc(new ArrayList<>(), new ArrayList<>());
+        Result result = wc.execute();
+        Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
+        Assertions.assertEquals(new ArrayList<>(), result.getResult());
+    }
+
+    @Test
     public void testCatStaticArgs() {
         cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")), new ArrayList<>());
         Result result = cat.execute();
@@ -169,5 +250,37 @@ public class CommandsTest {
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
         Assertions.assertEquals(new ArrayList<>(), result.getResult());
+    }
+
+    @Test
+    public void testAssignmentStaticArgs() {
+        assignment = new CommandAssignment(new ArrayList<>(List.of("a", "5")), new ArrayList<>());
+        Result result = assignment.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(new ArrayList<>(), result.getResult());
+        Assertions.assertEquals("5", Environment.getVariableValue("a"));
+    }
+    @Test
+    public void testAssignmentBadStaticArgs() {
+        assignment = new CommandAssignment(new ArrayList<>(List.of("a", "5", "6")), new ArrayList<>());
+        Result result = assignment.execute();
+        Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
+    }
+
+    @Test
+    public void testAssignmentDynamicArgs() {
+        assignment = new CommandAssignment(new ArrayList<>(List.of("a", "5")), new ArrayList<>(List.of("a", "5")));
+        Result result = assignment.execute();
+        Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
+    }
+
+    @Test
+    public void testExit(){
+        assignment = new CommandAssignment(new ArrayList<>(List.of("a", "5")), new ArrayList<>());
+        assignment.execute();
+        exit = new CommandExit(new ArrayList<>(), new ArrayList<>());
+        Result result = exit.execute();
+        Assertions.assertEquals(ExitCode.EXIT, result.getExitCode());
+        Assertions.assertNull(Environment.getVariableValue("a"));
     }
 }
