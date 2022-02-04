@@ -22,7 +22,7 @@ public class CommandWc implements AbstractCommand {
     private ArrayList<File> staticArgs = new ArrayList<>();
     private ArrayList<String> dynamicArgs = new ArrayList<>();
     private ExitCode exitCode = ExitCode.OK;
-    private final Logger logger = Logger.getLogger(CommandCat.class.getName());
+    private final Logger logger = Logger.getLogger(CommandWc.class.getName());
 
     public CommandWc(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
         validateStaticArgs(staticArgs);

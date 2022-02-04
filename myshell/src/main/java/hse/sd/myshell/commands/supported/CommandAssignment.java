@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public class CommandAssignment implements AbstractCommand {
     private ArrayList<String> staticArgs = new ArrayList<>();
     private final ArrayList<String> dynamicArgs = new ArrayList<>();
-    private final Logger logger = Logger.getLogger(CommandCat.class.getName());
+    private final Logger logger = Logger.getLogger(CommandAssignment.class.getName());
     private ExitCode exitCode = ExitCode.OK;
 
     public CommandAssignment(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {

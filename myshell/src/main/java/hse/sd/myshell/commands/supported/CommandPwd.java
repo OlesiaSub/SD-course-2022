@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public class CommandPwd implements AbstractCommand {
     private final ArrayList<File> staticArgs = new ArrayList<>();
     private final ArrayList<String> dynamicArgs = new ArrayList<>();
-    private final Logger logger = Logger.getLogger(CommandCat.class.getName());
+    private final Logger logger = Logger.getLogger(CommandPwd.class.getName());
     private ExitCode exitCode = ExitCode.OK;
 
     public CommandPwd(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
