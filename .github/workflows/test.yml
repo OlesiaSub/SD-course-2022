@@ -2,9 +2,9 @@ name: build
 
 on:
   push:
-    branches: [ myshell, master ]
+    branches: [ myshell, master, hw2-shell ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, hw2-shell ]
 
 jobs:
   setup:
