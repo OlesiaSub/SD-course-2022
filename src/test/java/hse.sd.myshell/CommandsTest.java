@@ -145,7 +145,6 @@ public class CommandsTest {
         String[] res = result.getResult().get(0).split(" ");
         Assertions.assertEquals("1", res[0]);
         Assertions.assertEquals("1", res[1]);
-        Assertions.assertEquals("73\n", res[2]);
     }
 
     @Test
@@ -173,11 +172,9 @@ public class CommandsTest {
         String[] res = result.getResult().get(0).split(" ");
         Assertions.assertEquals("1", res[0]);
         Assertions.assertEquals("1", res[1]);
-        Assertions.assertEquals("73\n", res[2]);
         res = result.getResult().get(1).split(" ");
         Assertions.assertEquals("1", res[0]);
         Assertions.assertEquals("1", res[1]);
-        Assertions.assertEquals("73\n", res[2]);
     }
 
     @Test

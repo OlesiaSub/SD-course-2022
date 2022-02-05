@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CommandOuter implements AbstractCommand {
@@ -53,21 +55,18 @@ public class CommandOuter implements AbstractCommand {
         String homeDirectory = System.getProperty("user.dir");
         Process process;
         try {
-            if (System.getProperty("os.name")
-                    .toLowerCase().startsWith("windows")) {
-                staticArgs.add(0, "cmd.exe");
-            } else {
-                staticArgs.add(0, "sh -c");
-            }
-            process = Runtime.getRuntime()
-                    .exec(staticArgs.toArray(String[]::new));
-            StreamGobbler streamGobbler =
-                    new StreamGobbler(process.getInputStream(), System.out::println);
+            staticArgs.add(0, "sh -c");
+            String args = String.join(" ", staticArgs);
+            System.out.println(args);
+            process=Runtime.getRuntime().exec("sh -c mkdir -p ~/sd/SD-course-2022/trashhh");
+//            process = Runtime.getRuntime().exec(args);
+            StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
             Executors.newSingleThreadExecutor().submit(streamGobbler);
             if (process.waitFor() != 0) {
                 exitCode = ExitCode.UNKNOWN_PROBLEM;
             }
         } catch (IOException | InterruptedException e) {
+            logger.log(Level.WARNING, e.getMessage());
             exitCode = ExitCode.UNKNOWN_PROBLEM;
         }
         return new Result(new ArrayList<>(), exitCode);

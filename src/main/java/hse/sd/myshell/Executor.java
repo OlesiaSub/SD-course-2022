@@ -45,6 +45,7 @@ public class Executor {
         if (clazz == null) {
             try {
                 clazz = Class.forName(packageName + "." + outerClassName);
+                staticArgs.add(0, commandName.toLowerCase(Locale.ROOT));
             } catch (ClassNotFoundException e) {
                 throw new MyShellException("Unable to execute outer command " + commandName);
             }
