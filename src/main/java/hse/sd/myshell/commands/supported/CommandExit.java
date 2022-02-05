@@ -7,7 +7,6 @@ import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CommandExit implements AbstractCommand {
