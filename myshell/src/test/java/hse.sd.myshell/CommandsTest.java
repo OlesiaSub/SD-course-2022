@@ -128,6 +128,7 @@ public class CommandsTest {
     public void testWcStaticArgs() {
         wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")), new ArrayList<>());
         Result result = wc.execute();
+        Assertions.assertEquals(1, 2);
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertEquals(1, result.getResult().size());
         String[] res = result.getResult().get(0).split(" ");
