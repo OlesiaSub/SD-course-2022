@@ -4,7 +4,7 @@ on:
   push:
     branches: [ myshell, master ]
   pull_request:
-    branches: [ myshell, master ]
+    branches: [ master ]
 
 jobs:
   setup:
