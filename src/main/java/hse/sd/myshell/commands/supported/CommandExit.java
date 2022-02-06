@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+/**
+ * Class corresponding to the command exit.
+ */
 public class CommandExit implements AbstractCommand {
     private final ArrayList<String> staticArgs = new ArrayList<>();
     private final ArrayList<String> dynamicArgs = new ArrayList<>();
@@ -16,10 +19,13 @@ public class CommandExit implements AbstractCommand {
     private final ExitCode exitCode = ExitCode.EXIT;
 
     public CommandExit(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
-        validateStaticArgs(staticArgs);
-        validateDynamicArgs(dynamicArgs);
     }
 
+    /**
+     * Do nothing, because args are not important.
+     *
+     * @param args a sequence of args for validating.
+     */
     @Override
     public void validateStaticArgs(@NotNull ArrayList<String> args) {
     }
@@ -28,6 +34,11 @@ public class CommandExit implements AbstractCommand {
     public void validateDynamicArgs(@NotNull ArrayList<String> args) {
     }
 
+    /**
+     * Clean the environment.
+     *
+     * @return exitCode = EXIT and empty result list.
+     */
     @Override
     @NotNull
     public Result execute() {

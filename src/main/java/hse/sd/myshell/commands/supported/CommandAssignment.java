@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Class corresponding to the assignment command.
+ */
 public class CommandAssignment implements AbstractCommand {
     private ArrayList<String> staticArgs = new ArrayList<>();
     private final ArrayList<String> dynamicArgs = new ArrayList<>();
@@ -21,6 +24,11 @@ public class CommandAssignment implements AbstractCommand {
         validateDynamicArgs(dynamicArgs);
     }
 
+    /**
+     * Check args, save if correct, update exitCode if incorrect. Should be only 2 static args (variable and value)
+     *
+     * @param args a sequence of args for validating.
+     */
     @Override
     public void validateStaticArgs(@NotNull ArrayList<String> args) {
         if (args.size() != 2) {
@@ -40,6 +48,11 @@ public class CommandAssignment implements AbstractCommand {
         }
     }
 
+    /**
+     * Update variable in environment.
+     *
+     * @return exitCode and result list.
+     */
     @Override
     @NotNull
     public Result execute() {

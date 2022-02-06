@@ -13,6 +13,9 @@ import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Class corresponding to the command cat.
+ */
 public class CommandCat implements AbstractCommand {
     private ArrayList<File> staticArgs = new ArrayList<>();
     private ArrayList<String> dynamicArgs = new ArrayList<>();
@@ -24,6 +27,11 @@ public class CommandCat implements AbstractCommand {
         validateDynamicArgs(dynamicArgs);
     }
 
+    /**
+     * Check args, save if correct, update exitCode if incorrect. All static args should be existing files.
+     *
+     * @param args a sequence of args for validating.
+     */
     @Override
     public void validateStaticArgs(@NotNull ArrayList<String> args) {
         if (args.size() == 0) return;
@@ -44,6 +52,12 @@ public class CommandCat implements AbstractCommand {
         dynamicArgs = args;
     }
 
+    /**
+     * Concatenates the content of static args into one line.
+     * If there are no static args, then concatenates dynamic args.
+     *
+     * @return exitCode and result list.
+     */
     @Override
     @NotNull
     public Result execute() {

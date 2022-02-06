@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
+/**
+ * Class for saving the result of commands execution.
+ */
 public class Result {
     private final ArrayList<String> result;
     private final ExitCode exitCode;

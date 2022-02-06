@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Logger;
 
+/**
+ * Class corresponding to the command pwd.
+ */
 public class CommandPwd implements AbstractCommand {
     private final ArrayList<File> staticArgs = new ArrayList<>();
     private final ArrayList<String> dynamicArgs = new ArrayList<>();
@@ -19,6 +22,11 @@ public class CommandPwd implements AbstractCommand {
     public CommandPwd(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
     }
 
+    /**
+     * Do nothing, because args are not important.
+     *
+     * @param args a sequence of args for validating.
+     */
     @Override
     public void validateStaticArgs(@NotNull ArrayList<String> args) {
     }
@@ -27,6 +35,11 @@ public class CommandPwd implements AbstractCommand {
     public void validateDynamicArgs(@NotNull ArrayList<String> args) {
     }
 
+    /**
+     * Get current user dir.
+     *
+     * @return exitCode = EXIT and current user dir in result list.
+     */
     @Override
     @NotNull
     public Result execute() {

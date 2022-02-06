@@ -14,6 +14,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+/**
+ * Class corresponding to the command wc.
+ */
 public class CommandWc implements AbstractCommand {
     private ArrayList<File> staticArgs = new ArrayList<>();
     private ArrayList<String> dynamicArgs = new ArrayList<>();
@@ -25,6 +28,11 @@ public class CommandWc implements AbstractCommand {
         validateDynamicArgs(dynamicArgs);
     }
 
+    /**
+     * Check args, save if correct, update exitCode if incorrect. All static args should be existing files.
+     *
+     * @param args a sequence of args for validating.
+     */
     @Override
     public void validateStaticArgs(@NotNull ArrayList<String> args) {
         staticArgs = new ArrayList<>();
@@ -43,6 +51,12 @@ public class CommandWc implements AbstractCommand {
         dynamicArgs = args;
     }
 
+    /**
+     * Concatenates the number of lines, words and bytes of static args into one line.
+     * If there are no static args, then concatenates the number of lines, words and bytes of dynamic args.
+     *
+     * @return exitCode and result list.
+     */
     @Override
     @NotNull
     public Result execute() {
