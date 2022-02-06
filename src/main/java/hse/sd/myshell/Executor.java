@@ -10,10 +10,20 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Class for commands execution
+ */
 public class Executor {
 
     private final Logger LOG = Logger.getLogger(Executor.class.getName());
 
+    /**
+     * Parses user input, transfers it to the corresponding class and executes it there
+     *
+     * @param commandSequence a sequence of commands entered by user
+     * @return Result, which contains result and exit code of the last executed command
+     * @throws MyShellException in case of any mistakes that were not handled by the application
+     */
     public Result executeAll(@NotNull String commandSequence) throws MyShellException {
         CommandParser parser = new CommandParser(commandSequence);
         ArrayList<String> commandArgs;
@@ -29,7 +39,7 @@ public class Executor {
                                    @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
         commandName = commandName.substring(0, 1).toUpperCase(Locale.ROOT) + commandName.substring(1).toLowerCase(Locale.ROOT);
         String className = "Command" + commandName;
-        String outerClassName = "CommandOuter";
+        String outerClassName = "CommandExternal";
         String instanceMethodName = "execute";
         Class<?>[] formalParameters = {ArrayList.class, ArrayList.class};
         String packageName = getClass().getPackage().getName() + ".commands";
@@ -65,14 +75,22 @@ public class Executor {
         return output;
     }
 
+    /**
+     * Class for parsing user input into sequence of commands
+     */
     private static class CommandParser {
 
-        private String currentRequest;
+        private final String currentRequest;
 
         CommandParser(@NotNull String request) {
             currentRequest = request;
         }
 
+        /**
+         * Parses input string into the sequence of command and arguments
+         *
+         * @return list of strings, where the first string is a command name, other strings are its arguments
+         */
         public @NotNull ArrayList<String> getNext() {
             ArrayList<String> command = new ArrayList<>();
             boolean quote = false;

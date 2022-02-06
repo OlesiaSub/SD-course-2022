@@ -1,6 +1,6 @@
 package hse.sd.myshell;
 
-import hse.sd.myshell.commands.CommandOuter;
+import hse.sd.myshell.commands.CommandExternal;
 import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import hse.sd.myshell.commands.supported.*;
@@ -23,7 +23,7 @@ public class CommandsTest {
     private CommandPwd pwd;
     private CommandAssignment assignment;
     private CommandExit exit;
-    private CommandOuter outer;
+    private CommandExternal outer;
 
     @TempDir
     File temporaryFolder;
@@ -286,11 +286,11 @@ public class CommandsTest {
 
     @Test
     public void testOuterCommandDir() {
-        outer = new CommandOuter(new ArrayList<>(List.of("mkdir", temporaryFolder.getPath() + "/dir")), new ArrayList<>());
+        outer = new CommandExternal(new ArrayList<>(List.of("mkdir", temporaryFolder.getPath() + "/dir")), new ArrayList<>());
         Result result = outer.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertTrue(new File(temporaryFolder.getPath() + "/dir").exists());
-        outer = new CommandOuter(new ArrayList<>(List.of("rmdir", temporaryFolder.getPath() + "/dir")), new ArrayList<>());
+        outer = new CommandExternal(new ArrayList<>(List.of("rmdir", temporaryFolder.getPath() + "/dir")), new ArrayList<>());
         result = outer.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertFalse(new File(temporaryFolder.getPath() + "/dir").exists());
@@ -298,7 +298,7 @@ public class CommandsTest {
 
     @Test
     public void testOuterCommandTouch() {
-        outer = new CommandOuter(new ArrayList<>(List.of("touch", temporaryFolder.getPath() + "/file.txt")), new ArrayList<>());
+        outer = new CommandExternal(new ArrayList<>(List.of("touch", temporaryFolder.getPath() + "/file.txt")), new ArrayList<>());
         Result result = outer.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertTrue(new File(temporaryFolder.getPath() + "/file.txt").exists());

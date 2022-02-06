@@ -11,6 +11,12 @@ public class MyShell {
 
     private static final Logger LOG = Logger.getLogger(MyShell.class.getName());
 
+    /**
+     * MyShell launcher, takes user's input and hands it over to [Executor]
+     * Processes output and exit code of the executed command
+     *
+     * @param args will be ignored by the application
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Executor executor = new Executor();
