@@ -1,11 +1,9 @@
 package hse.sd.myshell.commands;
 
+import hse.sd.myshell.Environment;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -30,8 +28,7 @@ public class CommandOuter implements AbstractCommand {
 
         @Override
         public void run() {
-            new BufferedReader(new InputStreamReader(inputStream)).lines()
-                    .forEach(consumer);
+            new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumer);
         }
     }
 
@@ -52,14 +49,12 @@ public class CommandOuter implements AbstractCommand {
 
     @Override
     public Result execute() {
-        String homeDirectory = System.getProperty("user.dir");
-        Process process;
         try {
-            staticArgs.add(0, "sh -c");
-            String args = String.join(" ", staticArgs);
-            System.out.println(args);
-            process=Runtime.getRuntime().exec("sh -c mkdir -p ~/sd/SD-course-2022/trashhh");
-//            process = Runtime.getRuntime().exec(args);
+            ProcessBuilder builder = new ProcessBuilder(staticArgs);
+            builder.directory(new File(System.getProperty("user.dir")));
+            builder.redirectError(ProcessBuilder.Redirect.INHERIT);
+            builder.environment().putAll(Environment.getEnvironment());
+            Process process = builder.start();
             StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
             Executors.newSingleThreadExecutor().submit(streamGobbler);
             if (process.waitFor() != 0) {
