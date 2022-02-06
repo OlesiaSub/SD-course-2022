@@ -284,13 +284,7 @@ public class CommandsTest {
         Assertions.assertNull(Environment.getVariableValue("a"));
     }
 
-    @Test
-    public void testOuterCommandLs() {
-        outer = new CommandOuter(new ArrayList<>(List.of("ls", temporaryFolder.getPath())), new ArrayList<>());
-        Result result = outer.execute();
-        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(new ArrayList<>(List.of("test_file1.txt", "test_file2.txt")), result.getResult());
-    }
+
 
     @Test
     public void testOuterCommandDir() {
