@@ -284,8 +284,6 @@ public class CommandsTest {
         Assertions.assertNull(Environment.getVariableValue("a"));
     }
 
-
-
     @Test
     public void testOuterCommandDir() {
         outer = new CommandOuter(new ArrayList<>(List.of("mkdir", temporaryFolder.getPath() + "/dir")), new ArrayList<>());
