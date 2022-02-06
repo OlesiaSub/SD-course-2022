@@ -1,5 +1,6 @@
 package hse.sd.myshell;
 
+import hse.sd.myshell.commands.CommandOuter;
 import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import hse.sd.myshell.commands.supported.*;
@@ -16,12 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommandsTest {
-    public CommandEcho echo;
-    public CommandCat cat;
-    public CommandWc wc;
-    public CommandPwd pwd;
-    public CommandAssignment assignment;
-    public CommandExit exit;
+    private CommandEcho echo;
+    private CommandCat cat;
+    private CommandWc wc;
+    private CommandPwd pwd;
+    private CommandAssignment assignment;
+    private CommandExit exit;
+    private CommandOuter outer;
 
     @TempDir
     File temporaryFolder;
@@ -53,7 +55,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testEchodynamicArgs() {
+    public void testEchoDynamicArgs() {
         echo = new CommandEcho(new ArrayList<>(), new ArrayList<>(List.of("test_value")));
         Result result = echo.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -69,7 +71,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testEchoMultipledynamicArgs() {
+    public void testEchoMultipleDynamicArgs() {
         echo = new CommandEcho(new ArrayList<>(), new ArrayList<>(List.of("test_value1", "test_value2")));
         Result result = echo.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -77,7 +79,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testEchodynamicAndStaticArgs() {
+    public void testEchoDynamicAndStaticArgs() {
         echo = new CommandEcho(new ArrayList<>(List.of("test_value")), new ArrayList<>(List.of("test_value")));
         Result result = echo.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
@@ -101,7 +103,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testPwddynamicArgs() {
+    public void testPwdDynamicArgs() {
         pwd = new CommandPwd(new ArrayList<>(), new ArrayList<>(List.of("test_value")));
         Result result = pwd.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -109,7 +111,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testPwddynamicAndStaticArgs() {
+    public void testPwdDynamicAndStaticArgs() {
         pwd = new CommandPwd(new ArrayList<>(List.of("test_value")), new ArrayList<>(List.of("test_value")));
         Result result = pwd.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -164,7 +166,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testWcMultipledynamicArgs() {
+    public void testWcMultipleDynamicArgs() {
         wc = new CommandWc(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")));
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -226,7 +228,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testCatMultipledynamicArgs() {
+    public void testCatMultipleDynamicArgs() {
         cat = new CommandCat(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -234,7 +236,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testCatdynamicAndStaticArgs() {
+    public void testCatDynamicAndStaticArgs() {
         cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -280,5 +282,42 @@ public class CommandsTest {
         Result result = exit.execute();
         Assertions.assertEquals(ExitCode.EXIT, result.getExitCode());
         Assertions.assertNull(Environment.getVariableValue("a"));
+    }
+
+    @Test
+    public void testOuterCommandLs() {
+        outer = new CommandOuter(new ArrayList<>(List.of("ls", temporaryFolder.getPath())), new ArrayList<>());
+        Result result = outer.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(new ArrayList<>(List.of("test_file1.txt", "test_file2.txt")), result.getResult());
+    }
+
+    @Test
+    public void testOuterCommandDir() {
+        outer = new CommandOuter(new ArrayList<>(List.of("mkdir", temporaryFolder.getPath() + "/dir")), new ArrayList<>());
+        Result result = outer.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertTrue(new File(temporaryFolder.getPath() + "/dir").exists());
+        outer = new CommandOuter(new ArrayList<>(List.of("rmdir", temporaryFolder.getPath() + "/dir")), new ArrayList<>());
+        result = outer.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertFalse(new File(temporaryFolder.getPath() + "/dir").exists());
+    }
+
+    @Test
+    public void testOuterCommandTouch() {
+        outer = new CommandOuter(new ArrayList<>(List.of("touch", temporaryFolder.getPath() + "/file.txt")), new ArrayList<>());
+        Result result = outer.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertTrue(new File(temporaryFolder.getPath() + "/file.txt").exists());
+    }
+
+    @Test
+    public void testOuterCommandGrep() {
+        outer = new CommandOuter(new ArrayList<>(
+                List.of("grep", "content", temporaryFolder.getPath() + "/test_file1.txt")), new ArrayList<>());
+        Result result = outer.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(new ArrayList<>(List.of("content of test file")), result.getResult());
     }
 }
