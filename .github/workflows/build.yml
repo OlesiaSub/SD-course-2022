@@ -2,7 +2,7 @@ name: build_test
 
 on:
   push:
-    branches: [ myshell, master, hw2-shell ]
+    branches: [ master, hw2-shell ]
   pull_request:
     branches: [ master, hw2-shell ]
 
