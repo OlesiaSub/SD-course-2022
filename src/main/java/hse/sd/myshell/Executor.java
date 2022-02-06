@@ -26,7 +26,7 @@ public class Executor {
     }
 
     private Result commandRedirect(@NotNull String commandName, @NotNull ArrayList<String> staticArgs,
-                                          @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
+                                   @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
         commandName = commandName.substring(0, 1).toUpperCase(Locale.ROOT) + commandName.substring(1).toLowerCase(Locale.ROOT);
         String className = "Command" + commandName;
         String outerClassName = "CommandOuter";

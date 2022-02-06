@@ -23,6 +23,11 @@ public class MyShell {
                 LOG.log(Level.WARNING, e.getMessage());
                 continue;
             }
+            if (output.getExitCode() == ExitCode.EXIT) {
+                LOG.log(Level.INFO, "Execution finished with exit code "
+                        + output.getExitCode() + ", exiting the application");
+                System.exit(0);
+            }
             if (output.getExitCode() != ExitCode.OK) {
                 LOG.log(Level.WARNING, "Execution finished with exit code " + output.getExitCode());
                 continue;

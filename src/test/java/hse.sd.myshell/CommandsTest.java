@@ -257,6 +257,7 @@ public class CommandsTest {
         Assertions.assertEquals(new ArrayList<>(), result.getResult());
         Assertions.assertEquals("5", Environment.getVariableValue("a"));
     }
+
     @Test
     public void testAssignmentBadStaticArgs() {
         assignment = new CommandAssignment(new ArrayList<>(List.of("a", "5", "6")), new ArrayList<>());
@@ -272,7 +273,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testExit(){
+    public void testExit() {
         assignment = new CommandAssignment(new ArrayList<>(List.of("a", "5")), new ArrayList<>());
         assignment.execute();
         exit = new CommandExit(new ArrayList<>(), new ArrayList<>());
