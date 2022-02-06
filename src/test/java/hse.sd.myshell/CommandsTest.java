@@ -311,13 +311,4 @@ public class CommandsTest {
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertTrue(new File(temporaryFolder.getPath() + "/file.txt").exists());
     }
-
-    @Test
-    public void testOuterCommandGrep() {
-        outer = new CommandOuter(new ArrayList<>(
-                List.of("grep", "content", temporaryFolder.getPath() + "/test_file1.txt")), new ArrayList<>());
-        Result result = outer.execute();
-        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(new ArrayList<>(List.of("content of test file")), result.getResult());
-    }
 }
