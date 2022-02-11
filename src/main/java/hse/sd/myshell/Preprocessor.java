@@ -16,7 +16,7 @@ public class Preprocessor {
      * @return result string with completed substitutions
      */
     public String process(String str) {
-        if (str == null) { // but it could be empty
+        if (str == null) { // but it can be empty
             logger.log(Level.WARNING, "Input string is null");
         }
         str = str + " "; // not to handle the end separately, will be deleted in the end of the method
@@ -27,7 +27,7 @@ public class Preprocessor {
             char symbol = str.charAt(i);
 
             if (isCollectingVar) {
-                if (Character.isDigit(symbol) && variableName.isEmpty()) { // case with ${number}
+                if (Character.isDigit(symbol) && variableName.length() == 0) { // case with ${number}
                     result.append(symbol).append(" ");
                     continue;
                 } else if (Character.isLetter(symbol) || Character.isDigit(symbol)) { // case with normal variable
