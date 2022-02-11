@@ -2,9 +2,9 @@ name: build_test
 
 on:
   push:
-    branches: [ master, hw2-shell, myshell-2 ]
+    branches: [ master, hw2-shell, hw3-shell ]
   pull_request:
-    branches: [ master, hw2-shell, myshell-2 ]
+    branches: [ master, hw2-shell, hw3-shell ]
 
 jobs:
   setup:
