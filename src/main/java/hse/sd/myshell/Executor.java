@@ -1,11 +1,13 @@
 package hse.sd.myshell;
 
+import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class Executor {
 
-    private final Logger LOG = Logger.getLogger(Executor.class.getName());
+    private final Logger logger = Logger.getLogger(Executor.class.getName());
 
     /**
      * Parses user input, transfers it to the corresponding class and executes it there
@@ -27,12 +29,17 @@ public class Executor {
     public Result executeAll(@NotNull String commandSequence) throws MyShellException {
         CommandParser parser = new CommandParser(commandSequence);
         ArrayList<String> commandArgs;
-        Result Result;
-        commandArgs = parser.getNext();
-        String commandName = commandArgs.get(0);
-        commandArgs.remove(0);
-        Result = commandRedirect(commandName, commandArgs, new ArrayList<>());
-        return Result;
+        Result result = new Result(new ArrayList<>(), ExitCode.EXIT);
+        ArrayList<String> prevResult = new ArrayList<>();
+        while (!(commandArgs = parser.getNext()).equals(Collections.EMPTY_LIST)) {
+            String commandName = commandArgs.remove(0);
+            if (!prevResult.isEmpty()) {
+                commandArgs.addAll(prevResult);
+            }
+            result = commandRedirect(commandName, commandArgs, new ArrayList<>());
+            prevResult = result.getResult();
+        }
+        return result;
     }
 
     private Result commandRedirect(@NotNull String commandName, @NotNull ArrayList<String> staticArgs,
@@ -49,7 +56,7 @@ public class Executor {
         try {
             clazz = Class.forName(supportedPackageName + "." + className);
         } catch (ClassNotFoundException e) {
-            LOG.log(Level.INFO, "Required command \"" + commandName +
+            logger.log(Level.INFO, "Required command \"" + commandName +
                     "\" is not supported and will be identified as an outer command");
         }
         if (clazz == null) {
@@ -80,7 +87,7 @@ public class Executor {
      */
     private static class CommandParser {
 
-        private final String currentRequest;
+        private String currentRequest;
 
         CommandParser(@NotNull String request) {
             currentRequest = request;
@@ -92,10 +99,15 @@ public class Executor {
          * @return list of strings, where the first string is a command name, other strings are its arguments
          */
         public @NotNull ArrayList<String> getNext() {
+            if (currentRequest.isEmpty() || currentRequest.matches("^[ |]+$")) {
+                return new ArrayList<>();
+            }
             ArrayList<String> command = new ArrayList<>();
             boolean quote = false;
             StringBuilder currentToken = new StringBuilder();
+            int cut = 0;
             for (char symbol : currentRequest.toCharArray()) {
+                cut ++;
                 if (symbol == '\'' || symbol == '"') {
                     quote = !quote;
                     if (currentToken.length() > 0) command.add(currentToken.toString());
@@ -105,6 +117,9 @@ public class Executor {
                 if (quote) {
                     currentToken.append(symbol);
                     continue;
+                }
+                if (symbol == '|') {
+                    break;
                 }
                 if (symbol == ' ') {
                     if (currentToken.length() > 0) command.add(currentToken.toString());
@@ -120,6 +135,7 @@ public class Executor {
                 currentToken.append(symbol);
             }
             if (currentToken.length() > 0) command.add(currentToken.toString());
+            currentRequest = currentRequest.substring(cut);
             return command;
         }
     }
