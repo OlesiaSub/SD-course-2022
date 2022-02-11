@@ -28,16 +28,20 @@ public class Executor {
      */
     public Result executeAll(@NotNull String commandSequence) throws MyShellException {
         CommandParser parser = new CommandParser(commandSequence);
-        ArrayList<String> commandArgs;
+        ArrayList<String> staticArgs;
+        ArrayList<String> dynamicArgs = new ArrayList<>();
         Result result = new Result(new ArrayList<>(), ExitCode.EXIT);
         ArrayList<String> prevResult = new ArrayList<>();
-        while (!(commandArgs = parser.getNext()).equals(Collections.EMPTY_LIST)) {
-            String commandName = commandArgs.remove(0);
+        while (!(staticArgs = parser.getNext()).equals(Collections.EMPTY_LIST)) {
+            String commandName = staticArgs.remove(0);
             if (!prevResult.isEmpty()) {
-                commandArgs.addAll(prevResult);
+                dynamicArgs.addAll(prevResult);
             }
-            result = commandRedirect(commandName, commandArgs, new ArrayList<>());
+            result = commandRedirect(commandName, staticArgs, dynamicArgs);
             prevResult = result.getResult();
+            if (result.getExitCode() == ExitCode.EXIT) {
+                return result;
+            }
         }
         return result;
     }
