@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class Executor {
 
-    private final Logger LOG = Logger.getLogger(Executor.class.getName());
+    private final Logger logger = Logger.getLogger(Executor.class.getName());
 
     /**
      * Parses user input, transfers it to the corresponding class and executes it there
@@ -58,7 +58,7 @@ public class Executor {
         try {
             clazz = Class.forName(supportedPackageName + "." + className);
         } catch (ClassNotFoundException e) {
-            LOG.log(Level.INFO, "Required command \"" + commandName +
+            logger.log(Level.INFO, "Required command \"" + commandName +
                     "\" is not supported and will be identified as an outer command");
         }
         if (clazz == null) {

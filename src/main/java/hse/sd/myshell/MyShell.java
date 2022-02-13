@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 public class MyShell {
 
-    private static final Logger LOG = Logger.getLogger(MyShell.class.getName());
+    private static final Logger logger = Logger.getLogger(MyShell.class.getName());
 
     /**
      * MyShell launcher, takes user's input and hands it over to [Executor]
@@ -28,26 +28,26 @@ public class MyShell {
                 commandSequence = scanner.nextLine();
             }
             if (commandSequence == null || commandSequence.isEmpty()) {
-                LOG.log(Level.INFO, "Execution finished with exit code " + ExitCode.EXIT);
+                logger.log(Level.INFO, "Execution finished with exit code " + ExitCode.EXIT);
                 System.exit(0);
             }
             Result output;
             try {
                 output = executor.executeAll(commandSequence);
             } catch (MyShellException e) {
-                LOG.log(Level.WARNING, e.getMessage());
+                logger.log(Level.WARNING, e.getMessage());
                 continue;
             }
             if (output.getExitCode() == ExitCode.EXIT) {
-                LOG.log(Level.INFO, "Execution finished with exit code "
+                logger.log(Level.INFO, "Execution finished with exit code "
                         + output.getExitCode() + ", exiting the application");
                 System.exit(0);
             }
             if (output.getExitCode() != ExitCode.OK) {
-                LOG.log(Level.WARNING, "Execution finished with exit code " + output.getExitCode());
+                logger.log(Level.WARNING, "Execution finished with exit code " + output.getExitCode());
                 continue;
             }
-            LOG.log(Level.INFO, "Execution finished with exit code " + output.getExitCode());
+            logger.log(Level.INFO, "Execution finished with exit code " + output.getExitCode());
             System.err.flush();
             for (String res : output.getResult()) {
                 System.out.println(res);
