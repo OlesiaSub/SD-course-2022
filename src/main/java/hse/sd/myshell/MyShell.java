@@ -18,14 +18,21 @@ public class MyShell {
      * @param args will be ignored by the application
      */
     public static void main(String[] args) {
+        System.out.println("Staring MyShell...");
         Scanner scanner = new Scanner(System.in);
         Executor executor = new Executor();
         while (true) {
-//            System.out.println(">>");
-            String commandSequence = scanner.nextLine();
-            if (commandSequence == null || commandSequence.isEmpty()) {
-                continue;
+            System.err.flush();
+            System.out.print(">> ");
+            String commandSequence = "";
+            if (scanner.hasNext()) {
+                commandSequence = scanner.next();
             }
+            if (commandSequence == null || commandSequence.isEmpty()) {
+                LOG.log(Level.INFO, "Execution finished with exit code " + ExitCode.EXIT);
+                System.exit(0);
+            }
+            System.out.println(commandSequence);
             Result output;
             try {
                 output = executor.executeAll(commandSequence);
