@@ -26,13 +26,12 @@ public class MyShell {
             System.out.print(">> ");
             String commandSequence = "";
             if (scanner.hasNext()) {
-                commandSequence = scanner.next();
+                commandSequence = scanner.nextLine();
             }
             if (commandSequence == null || commandSequence.isEmpty()) {
                 LOG.log(Level.INFO, "Execution finished with exit code " + ExitCode.EXIT);
                 System.exit(0);
             }
-            System.out.println(commandSequence);
             Result output;
             try {
                 output = executor.executeAll(commandSequence);

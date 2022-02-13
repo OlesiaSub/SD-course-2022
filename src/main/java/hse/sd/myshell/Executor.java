@@ -93,16 +93,23 @@ public class Executor {
          */
         public @NotNull ArrayList<String> getNext() {
             ArrayList<String> command = new ArrayList<>();
-            boolean quote = false;
+            boolean singleQuote = false;
+            boolean doubleQuote = false;
             StringBuilder currentToken = new StringBuilder();
             for (char symbol : currentRequest.toCharArray()) {
-                if (symbol == '\'' || symbol == '"') {
-                    quote = !quote;
+                if (symbol == '\'' && !doubleQuote) {
+                    singleQuote = !singleQuote;
                     if (currentToken.length() > 0) command.add(currentToken.toString());
                     currentToken = new StringBuilder();
                     continue;
                 }
-                if (quote) {
+                if (symbol == '\"' && !singleQuote) {
+                    doubleQuote = !doubleQuote;
+                    if (currentToken.length() > 0) command.add(currentToken.toString());
+                    currentToken = new StringBuilder();
+                    continue;
+                }
+                if (singleQuote || doubleQuote) {
                     currentToken.append(symbol);
                     continue;
                 }
