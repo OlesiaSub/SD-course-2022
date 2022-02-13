@@ -99,13 +99,17 @@ public class Executor {
             for (char symbol : currentRequest.toCharArray()) {
                 if (symbol == '\'' && !doubleQuote) {
                     singleQuote = !singleQuote;
-                    if (currentToken.length() > 0) command.add(currentToken.toString());
+                    if (currentToken.length() > 0) {
+                        command.add(currentToken.toString());
+                    }
                     currentToken = new StringBuilder();
                     continue;
                 }
                 if (symbol == '\"' && !singleQuote) {
                     doubleQuote = !doubleQuote;
-                    if (currentToken.length() > 0) command.add(currentToken.toString());
+                    if (currentToken.length() > 0) {
+                        command.add(currentToken.toString());
+                    }
                     currentToken = new StringBuilder();
                     continue;
                 }
@@ -114,19 +118,25 @@ public class Executor {
                     continue;
                 }
                 if (symbol == ' ') {
-                    if (currentToken.length() > 0) command.add(currentToken.toString());
+                    if (currentToken.length() > 0) {
+                        command.add(currentToken.toString());
+                    }
                     currentToken = new StringBuilder();
                     continue;
                 }
                 if (symbol == '=') {
-                    if (currentToken.length() > 0) command.add(currentToken.toString());
+                    if (currentToken.length() > 0) {
+                        command.add(currentToken.toString());
+                    }
                     currentToken = new StringBuilder();
                     command.add(0, "assignment");
                     continue;
                 }
                 currentToken.append(symbol);
             }
-            if (currentToken.length() > 0) command.add(currentToken.toString());
+            if (currentToken.length() > 0) {
+                command.add(currentToken.toString());
+            }
             return command;
         }
     }
