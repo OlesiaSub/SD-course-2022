@@ -48,8 +48,12 @@ public class Executor {
 
     private Result commandRedirect(@NotNull String commandName, @NotNull ArrayList<String> staticArgs,
                                    @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
-        commandName = commandName.substring(0, 1).toUpperCase(Locale.ROOT) + commandName.substring(1).toLowerCase(Locale.ROOT);
-        String className = "Command" + commandName;
+        String supportedCommandName = commandName;
+        if (commandName.equals(commandName.toLowerCase())) {
+            supportedCommandName = commandName.substring(0, 1).toUpperCase(Locale.ROOT)
+                    + commandName.substring(1).toLowerCase(Locale.ROOT);
+        }
+        String className = "Command" + supportedCommandName;
         String outerClassName = "CommandExternal";
         String instanceMethodName = "execute";
         Class<?>[] formalParameters = {ArrayList.class, ArrayList.class};
@@ -66,7 +70,7 @@ public class Executor {
         if (clazz == null) {
             try {
                 clazz = Class.forName(packageName + "." + outerClassName);
-                staticArgs.add(0, commandName.toLowerCase(Locale.ROOT));
+                staticArgs.add(0, commandName);
             } catch (ClassNotFoundException e) {
                 throw new MyShellException("Unable to execute outer command " + commandName);
             }
@@ -75,6 +79,9 @@ public class Executor {
             Object newInstance = clazz.getDeclaredConstructor(formalParameters).newInstance(staticArgs, dynamicArgs);
             Method method = clazz.getMethod(instanceMethodName);
             output = (Result) method.invoke(newInstance);
+            if (output.getResult().size() <= 1) {
+                output = (Result) method.invoke(newInstance);
+            }
         } catch (NoSuchMethodException e) {
             throw new MyShellException("Can not find required method of the command " + commandName);
         } catch (InstantiationException e) {
@@ -107,18 +114,29 @@ public class Executor {
                 return new ArrayList<>();
             }
             ArrayList<String> command = new ArrayList<>();
-            boolean quote = false;
+            boolean singleQuote = false;
+            boolean doubleQuote = false;
             StringBuilder currentToken = new StringBuilder();
             int cut = 0;
             for (char symbol : currentRequest.toCharArray()) {
                 cut ++;
-                if (symbol == '\'' || symbol == '"') {
-                    quote = !quote;
-                    if (currentToken.length() > 0) command.add(currentToken.toString());
+                if (symbol == '\'' && !doubleQuote) {
+                    singleQuote = !singleQuote;
+                    if (currentToken.length() > 0) {
+                        command.add(currentToken.toString());
+                    }
                     currentToken = new StringBuilder();
                     continue;
                 }
-                if (quote) {
+                if (symbol == '\"' && !singleQuote) {
+                    doubleQuote = !doubleQuote;
+                    if (currentToken.length() > 0) {
+                        command.add(currentToken.toString());
+                    }
+                    currentToken = new StringBuilder();
+                    continue;
+                }
+                if (singleQuote || doubleQuote) {
                     currentToken.append(symbol);
                     continue;
                 }
@@ -126,19 +144,25 @@ public class Executor {
                     break;
                 }
                 if (symbol == ' ') {
-                    if (currentToken.length() > 0) command.add(currentToken.toString());
+                    if (currentToken.length() > 0) {
+                        command.add(currentToken.toString());
+                    }
                     currentToken = new StringBuilder();
                     continue;
                 }
                 if (symbol == '=') {
-                    if (currentToken.length() > 0) command.add(currentToken.toString());
+                    if (currentToken.length() > 0) {
+                        command.add(currentToken.toString());
+                    }
                     currentToken = new StringBuilder();
                     command.add(0, "assignment");
                     continue;
                 }
                 currentToken.append(symbol);
             }
-            if (currentToken.length() > 0) command.add(currentToken.toString());
+            if (currentToken.length() > 0) {
+                command.add(currentToken.toString());
+            }
             currentRequest = currentRequest.substring(cut);
             return command;
         }

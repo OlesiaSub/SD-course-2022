@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -23,15 +24,17 @@ public class CommandExternal implements AbstractCommand {
      * Consumer of the external command's execution output
      */
     private static class MyConsumer implements Consumer<String> {
-        private final ArrayList<String> result = new ArrayList<>();
+        private final StringBuilder result = new StringBuilder();
 
         /**
          * Adds current line to resulting ArrayList
+         *
          * @param line line of the execution output
          */
         @Override
         public void accept(String line) {
-            result.add(line);
+            result.append(line);
+            result.append("\n");
         }
     }
 
@@ -44,7 +47,7 @@ public class CommandExternal implements AbstractCommand {
 
         /**
          * @param inputStream InputStream to be consumed
-         * @param consumer its consumer
+         * @param consumer    its consumer
          */
         public StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
             this.inputStream = inputStream;
@@ -62,7 +65,8 @@ public class CommandExternal implements AbstractCommand {
 
     /**
      * Constructor, validates arguments
-     * @param staticArgs static arguments
+     *
+     * @param staticArgs  static arguments
      * @param dynamicArgs dynamic arguments
      */
     public CommandExternal(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
@@ -88,6 +92,7 @@ public class CommandExternal implements AbstractCommand {
 
     /**
      * Builds a process for the external command to be executed in
+     *
      * @return Result of the execution
      * @see Result
      */
@@ -110,6 +115,6 @@ public class CommandExternal implements AbstractCommand {
             logger.log(Level.WARNING, e.getMessage());
             exitCode = ExitCode.UNKNOWN_PROBLEM;
         }
-        return new Result(consumer.result, exitCode);
+        return new Result(new ArrayList<>(Collections.singleton(consumer.result.toString())), exitCode);
     }
 }

@@ -31,16 +31,12 @@ public class CommandEcho implements AbstractCommand {
      */
     @Override
     public void validateStaticArgs(@NotNull ArrayList<String> args) {
-        if (args.size() > 0) {
-            staticArgs = args;
-        }
+        staticArgs = args;
     }
 
     @Override
     public void validateDynamicArgs(@NotNull ArrayList<String> args) {
-        if (args.size() > 0) {
-            dynamicArgs = args;
-        }
+        dynamicArgs = args;
     }
 
     /**
@@ -54,10 +50,7 @@ public class CommandEcho implements AbstractCommand {
     @NotNull
     public Result execute() {
         StringBuilder result = new StringBuilder();
-        if ((staticArgs.size() > 0 && dynamicArgs.size() > 0)
-                || (staticArgs.size() == 0 && dynamicArgs.size() == 0)) {
-            exitCode = ExitCode.BAD_ARGS;
-            logger.log(Level.WARNING, "Bad arguments in echo (static: " + String.join(", ", staticArgs) + ", dynamic: " + String.join(", ", dynamicArgs) + ")");
+        if ((staticArgs.size() > 0 && dynamicArgs.size() > 0) || (staticArgs.size() == 0 && dynamicArgs.size() == 0)) {
             return new Result(new ArrayList<>(), exitCode);
         }
         if (staticArgs.size() > 0) {

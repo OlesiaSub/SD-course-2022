@@ -41,11 +41,6 @@ public class CommandAssignment implements AbstractCommand {
 
     @Override
     public void validateDynamicArgs(@NotNull ArrayList<String> args) {
-        if (args.size() > 0) {
-            exitCode = ExitCode.BAD_ARGS;
-            logger.log(Level.WARNING, "Dynamic arguments in Assignment: " + String.join(", ", args));
-
-        }
     }
 
     /**
@@ -56,7 +51,7 @@ public class CommandAssignment implements AbstractCommand {
     @Override
     @NotNull
     public Result execute() {
-        if (staticArgs.size() > 0 && dynamicArgs.size() == 0) {
+        if (staticArgs.size() > 0) {
             Environment.setVariableValue(staticArgs.get(0), staticArgs.get(1));
         }
         return new Result(new ArrayList<>(), exitCode);

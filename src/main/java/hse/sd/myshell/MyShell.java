@@ -18,11 +18,20 @@ public class MyShell {
      * @param args will be ignored by the application
      */
     public static void main(String[] args) {
+        System.out.println("Staring MyShell...");
         Scanner scanner = new Scanner(System.in);
         Executor executor = new Executor();
         Preprocessor preprocessor = new Preprocessor();
         while (true) {
-            String commandSequence = scanner.nextLine();
+            System.out.print(">> ");
+            String commandSequence = "";
+            if (scanner.hasNext()) {
+                commandSequence = scanner.nextLine();
+            }
+            if (commandSequence == null || commandSequence.isEmpty()) {
+                logger.log(Level.INFO, "Execution finished with exit code " + ExitCode.EXIT);
+                System.exit(0);
+            }
             Result output;
             commandSequence = preprocessor.process(commandSequence);
             try {
@@ -41,9 +50,12 @@ public class MyShell {
                 continue;
             }
             logger.log(Level.INFO, "Execution finished with exit code " + output.getExitCode());
+            System.err.flush();
             for (String res : output.getResult()) {
                 System.out.println(res);
             }
+            System.out.println();
+            System.out.flush();
         }
     }
 }
