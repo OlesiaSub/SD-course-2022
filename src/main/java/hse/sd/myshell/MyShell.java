@@ -22,7 +22,6 @@ public class MyShell {
         Scanner scanner = new Scanner(System.in);
         Executor executor = new Executor();
         while (true) {
-            System.err.flush();
             System.out.print(">> ");
             String commandSequence = "";
             if (scanner.hasNext()) {
@@ -49,9 +48,11 @@ public class MyShell {
                 continue;
             }
             LOG.log(Level.INFO, "Execution finished with exit code " + output.getExitCode());
+            System.err.flush();
             for (String res : output.getResult()) {
                 System.out.println(res);
             }
+            System.out.println();
             System.out.flush();
         }
     }
