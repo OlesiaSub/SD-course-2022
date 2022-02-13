@@ -28,7 +28,9 @@ public class Preprocessor {
 
             if (isCollectingVar) {
                 if (Character.isDigit(symbol) && variableName.length() == 0) { // case with ${number}
-                    result.append(symbol).append(" ");
+                    result.setLength(result.length() - 1);
+                    result.append(" ");
+                    isCollectingVar = false;
                     continue;
                 } else if (Character.isLetter(symbol) || Character.isDigit(symbol)) { // case with normal variable
                     variableName.append(symbol);
@@ -36,11 +38,13 @@ public class Preprocessor {
                 }
                 isCollectingVar = false;
                 String variable = Environment.getVariableValue(variableName.toString());
-                if (variable == null) {
-                    result.append(variableName);
-                } else {
+                if (variableName.length() > 0) {
                     result.setLength(result.length() - 1);
-                    result.append(variable);
+                    if (variable == null) {
+                        result.append(" ");
+                    } else {
+                        result.append(variable);
+                    }
                 }
                 variableName.setLength(0);
             }
