@@ -157,5 +157,5 @@ ____
 ## Схема архитектуры
 
 <br></br>
-![architecture](assets/architecture.png)
+![architecture](assets/SD.png)
 <br></br>
