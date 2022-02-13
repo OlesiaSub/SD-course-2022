@@ -40,7 +40,8 @@ public class CommandWc implements AbstractCommand {
             File f = new File(file);
             if (!f.exists() || f.isDirectory()) {
                 logger.log(Level.WARNING, "File does not exist: " + file);
-                continue;
+                exitCode = ExitCode.BAD_ARGS;
+                return;
             }
             staticArgs.add(f);
         }
@@ -48,6 +49,10 @@ public class CommandWc implements AbstractCommand {
 
     @Override
     public void validateDynamicArgs(@NotNull ArrayList<String> args) {
+        if (args.size() > 1) {
+            exitCode = ExitCode.BAD_ARGS;
+            return;
+        }
         dynamicArgs = args;
     }
 
@@ -60,20 +65,19 @@ public class CommandWc implements AbstractCommand {
     @Override
     @NotNull
     public Result execute() {
-        ArrayList<String> result = new ArrayList<>();
-        if (staticArgs.size() == 0 && dynamicArgs.size() == 0) {
+        if (exitCode != ExitCode.OK || staticArgs.isEmpty() && dynamicArgs.isEmpty()) {
             exitCode = ExitCode.BAD_ARGS;
-            logger.log(Level.WARNING, "Incorrect arguments in wc command");
             return new Result(new ArrayList<>(), exitCode);
         }
+        ArrayList<String> result = new ArrayList<>();
         if (staticArgs.size() > 0) {
             for (File file : staticArgs) {
                 long lineCount = 0;
                 long wordCount = 0;
                 try (Stream<String> stream = Files.lines(file.toPath(), StandardCharsets.UTF_8);
                      Stream<String> wcStream = Files.lines(file.toPath(), StandardCharsets.UTF_8)) {
-                    lineCount = stream.count();
-                    wordCount = wcStream.map(c -> c.chars().filter(Character::isWhitespace).count()).reduce(0L, Long::sum);
+                    lineCount = stream.map(c -> c.chars().filter(x -> x == '\n').count()).reduce(0L, Long::sum) + 1;
+                    wordCount = wcStream.map(c -> c.chars().filter(Character::isWhitespace).count()).reduce(0L, Long::sum) + 1;
                 } catch (IOException e) {
                     exitCode = ExitCode.UNKNOWN_PROBLEM;
                     logger.log(Level.WARNING, "Unknown problem with file: " + e.getMessage());
@@ -82,7 +86,7 @@ public class CommandWc implements AbstractCommand {
             }
         } else {
             for (String string : dynamicArgs) {
-                result.add("1 1 " + string.getBytes().length + "\n");
+                result.add(string.lines().count() + " " + (1 + string.chars().filter(Character::isWhitespace).count()) + " " + string.getBytes().length + "\n");
             }
         }
         return new Result(result, exitCode);
