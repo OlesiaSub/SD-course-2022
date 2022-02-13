@@ -21,7 +21,11 @@ public class MyShell {
         Scanner scanner = new Scanner(System.in);
         Executor executor = new Executor();
         while (true) {
+//            System.out.println(">>");
             String commandSequence = scanner.nextLine();
+            if (commandSequence == null || commandSequence.isEmpty()) {
+                continue;
+            }
             Result output;
             try {
                 output = executor.executeAll(commandSequence);
@@ -42,6 +46,7 @@ public class MyShell {
             for (String res : output.getResult()) {
                 System.out.println(res);
             }
+            System.out.flush();
         }
     }
 }
