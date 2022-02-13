@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -23,7 +24,7 @@ public class CommandExternal implements AbstractCommand {
      * Consumer of the external command's execution output
      */
     private static class MyConsumer implements Consumer<String> {
-        private final ArrayList<String> result = new ArrayList<>();
+        private final StringBuilder result = new StringBuilder();
 
         /**
          * Adds current line to resulting ArrayList
@@ -32,7 +33,8 @@ public class CommandExternal implements AbstractCommand {
          */
         @Override
         public void accept(String line) {
-            result.add(line);
+            result.append(line);
+            result.append("\n");
         }
     }
 
@@ -113,6 +115,6 @@ public class CommandExternal implements AbstractCommand {
             logger.log(Level.WARNING, e.getMessage());
             exitCode = ExitCode.UNKNOWN_PROBLEM;
         }
-        return new Result(consumer.result, exitCode);
+        return new Result(new ArrayList<>(Collections.singleton(consumer.result.toString())), exitCode);
     }
 }
