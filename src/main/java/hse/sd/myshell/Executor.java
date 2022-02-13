@@ -1,11 +1,13 @@
 package hse.sd.myshell;
 
+import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,17 +29,23 @@ public class Executor {
     public Result executeAll(@NotNull String commandSequence) throws MyShellException {
         CommandParser parser = new CommandParser(commandSequence);
         ArrayList<String> commandArgs;
-        Result Result;
+        Result result;
         commandArgs = parser.getNext();
+        if (commandArgs.isEmpty()) {
+            return new Result(new ArrayList<>(), ExitCode.BAD_ARGS);
+        }
         String commandName = commandArgs.get(0);
         commandArgs.remove(0);
-        Result = commandRedirect(commandName, commandArgs, new ArrayList<>());
-        return Result;
+        result = commandRedirect(commandName, commandArgs, new ArrayList<>());
+        return result;
     }
 
     private Result commandRedirect(@NotNull String commandName, @NotNull ArrayList<String> staticArgs,
                                    @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
-        commandName = commandName.substring(0, 1).toUpperCase(Locale.ROOT) + commandName.substring(1).toLowerCase(Locale.ROOT);
+        if (commandName.equals(commandName.toLowerCase())) {
+            commandName = commandName.substring(0, 1).toUpperCase(Locale.ROOT)
+                    + commandName.substring(1).toLowerCase(Locale.ROOT);
+        }
         String className = "Command" + commandName;
         String outerClassName = "CommandExternal";
         String instanceMethodName = "execute";
@@ -55,7 +63,7 @@ public class Executor {
         if (clazz == null) {
             try {
                 clazz = Class.forName(packageName + "." + outerClassName);
-                staticArgs.add(0, commandName.toLowerCase(Locale.ROOT));
+                staticArgs.add(0, commandName);
             } catch (ClassNotFoundException e) {
                 throw new MyShellException("Unable to execute outer command " + commandName);
             }

@@ -303,4 +303,11 @@ public class CommandsTest {
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertTrue(new File(temporaryFolder.getPath() + "/file.txt").exists());
     }
+
+    @Test
+    public void testNonExistingOuterCommand() {
+        outer = new CommandExternal(new ArrayList<>(List.of("команда", temporaryFolder.getPath() + "/file.txt")), new ArrayList<>());
+        Result result = outer.execute();
+        Assertions.assertEquals(ExitCode.UNKNOWN_PROBLEM, result.getExitCode());
+    }
 }

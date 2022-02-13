@@ -27,6 +27,7 @@ public class CommandExternal implements AbstractCommand {
 
         /**
          * Adds current line to resulting ArrayList
+         *
          * @param line line of the execution output
          */
         @Override
@@ -44,7 +45,7 @@ public class CommandExternal implements AbstractCommand {
 
         /**
          * @param inputStream InputStream to be consumed
-         * @param consumer its consumer
+         * @param consumer    its consumer
          */
         public StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
             this.inputStream = inputStream;
@@ -62,7 +63,8 @@ public class CommandExternal implements AbstractCommand {
 
     /**
      * Constructor, validates arguments
-     * @param staticArgs static arguments
+     *
+     * @param staticArgs  static arguments
      * @param dynamicArgs dynamic arguments
      */
     public CommandExternal(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
@@ -88,6 +90,7 @@ public class CommandExternal implements AbstractCommand {
 
     /**
      * Builds a process for the external command to be executed in
+     *
      * @return Result of the execution
      * @see Result
      */
