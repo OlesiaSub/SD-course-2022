@@ -3,6 +3,7 @@ package hse.sd.myshell;
 import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,16 +21,18 @@ public class MyShell {
     public static void main(String[] args) {
         System.out.println("Staring MyShell...");
         Scanner scanner = new Scanner(System.in);
+        scanner.useDelimiter("\n");
         Executor executor = new Executor();
         while (true) {
             System.out.print(">> ");
             String commandSequence = "";
-            if (scanner.hasNext()) {
-                commandSequence = scanner.nextLine();
+            try {
+                commandSequence = scanner.next();
+            } catch (NoSuchElementException e) {
+                commandSequence = "exit";
             }
             if (commandSequence == null || commandSequence.isEmpty()) {
-                logger.log(Level.INFO, "Execution finished with exit code " + ExitCode.EXIT);
-                System.exit(0);
+                continue;
             }
             Result output;
             try {
