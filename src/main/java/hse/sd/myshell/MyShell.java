@@ -51,7 +51,6 @@ public class MyShell {
                 continue;
             }
             logger.log(Level.INFO, "Execution finished with exit code " + output.getExitCode());
-            System.err.flush();
             for (String res : output.getResult()) {
                 System.out.println(res);
             }
