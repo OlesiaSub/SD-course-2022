@@ -3,6 +3,10 @@ package hse.sd.myshell;
 import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,23 +18,26 @@ public class MyShell {
     /**
      * MyShell launcher, takes user's input, launches Preprocessing and transfers its result to Executor
      * Processes output and exit code of the last executed command
+     * Finishes execution in case of either ctrl+D input or exit command
      *
      * @param args will be ignored by the application
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("Staring MyShell...");
         Scanner scanner = new Scanner(System.in);
+        scanner.useDelimiter("\n");
         Executor executor = new Executor();
         Preprocessor preprocessor = new Preprocessor();
         while (true) {
             System.out.print(">> ");
             String commandSequence = "";
-            if (scanner.hasNext()) {
-                commandSequence = scanner.nextLine();
+            try {
+                commandSequence = scanner.next();
+            } catch (NoSuchElementException e) {
+                commandSequence = "exit";
             }
             if (commandSequence == null || commandSequence.isEmpty()) {
-                logger.log(Level.INFO, "Execution finished with exit code " + ExitCode.EXIT);
-                System.exit(0);
+                continue;
             }
             Result output;
             commandSequence = preprocessor.process(commandSequence);
