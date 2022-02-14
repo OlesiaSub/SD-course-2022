@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,6 +98,7 @@ public class Executor {
 
         /**
          * Parses input string into the sequence of command and arguments
+         * Examples of parsing: 1. echo x=y --> ["echo", "x=y"] 2. echo=x --> ["assignment", "echo", "x=y"]
          *
          * @return list of strings, where the first string is a command name, other strings are its arguments
          */
@@ -105,6 +107,10 @@ public class Executor {
             boolean singleQuote = false;
             boolean doubleQuote = false;
             StringBuilder currentToken = new StringBuilder();
+            char prev = ' ';
+            boolean wasAssignment = false;
+            boolean wasCommand = false;
+            boolean first = true;
             for (char symbol : currentRequest.toCharArray()) {
                 if (symbol == '\'' && !doubleQuote) {
                     singleQuote = !singleQuote;
@@ -112,6 +118,7 @@ public class Executor {
                         command.add(currentToken.toString());
                     }
                     currentToken = new StringBuilder();
+                    prev = symbol;
                     continue;
                 }
                 if (symbol == '\"' && !singleQuote) {
@@ -120,28 +127,38 @@ public class Executor {
                         command.add(currentToken.toString());
                     }
                     currentToken = new StringBuilder();
+                    prev = symbol;
                     continue;
                 }
                 if (singleQuote || doubleQuote) {
                     currentToken.append(symbol);
+                    prev = symbol;
                     continue;
                 }
                 if (symbol == ' ') {
                     if (currentToken.length() > 0) {
                         command.add(currentToken.toString());
                     }
+                    if(!wasAssignment && first) {
+                        first = false;
+                        wasCommand = true;
+                    }
                     currentToken = new StringBuilder();
+                    prev = symbol;
                     continue;
                 }
-                if (symbol == '=') {
+                if (symbol == '=' && prev != ' ' && !wasAssignment && !wasCommand) {
+                    wasAssignment = true;
                     if (currentToken.length() > 0) {
                         command.add(currentToken.toString());
                     }
                     currentToken = new StringBuilder();
                     command.add(0, "assignment");
+                    prev = symbol;
                     continue;
                 }
                 currentToken.append(symbol);
+                prev = symbol;
             }
             if (currentToken.length() > 0) {
                 command.add(currentToken.toString());
