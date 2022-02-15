@@ -2,10 +2,6 @@ package hse.sd.myshell;
 
 import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -22,7 +18,7 @@ public class MyShell {
      *
      * @param args will be ignored by the application
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         System.out.println("Staring MyShell...");
         Scanner scanner = new Scanner(System.in);
         scanner.useDelimiter("\n");
@@ -30,7 +26,7 @@ public class MyShell {
         Preprocessor preprocessor = new Preprocessor();
         while (true) {
             System.out.print(">> ");
-            String commandSequence = "";
+            String commandSequence;
             try {
                 commandSequence = scanner.next();
             } catch (NoSuchElementException e) {
@@ -57,7 +53,6 @@ public class MyShell {
                 continue;
             }
             logger.log(Level.INFO, "Execution finished with exit code " + output.getExitCode());
-            System.err.flush();
             for (String res : output.getResult()) {
                 System.out.println(res);
             }
