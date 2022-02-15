@@ -136,22 +136,32 @@ public class Executor {
             boolean first = true;
             for (char symbol : currentRequest.toCharArray()) {
                 if (symbol == '\'' && !doubleQuote && (prev == ' ' || prev == '=')) {
-                    singleQuote = !singleQuote;
-                    if (currentToken.length() > 0) {
+                    if (singleQuote) {
+                        currentToken.append(symbol);
                         command.add(currentToken.toString());
+                    } else {
+                        if (currentToken.length() > 0) {
+                            command.add(currentToken.toString());
+                        }
+                        currentToken = new StringBuilder();
+                        currentToken.append(symbol);
                     }
-                    currentToken = new StringBuilder();
-                    currentToken.append(symbol);
+                    singleQuote = !singleQuote;
                     prev = symbol;
                     continue;
                 }
                 if (symbol == '\"' && !singleQuote && (prev == ' ' || prev == '=')) {
-                    doubleQuote = !doubleQuote;
-                    if (currentToken.length() > 0) {
+                    if (doubleQuote) {
+                        currentToken.append(symbol);
                         command.add(currentToken.toString());
+                    } else {
+                        if (currentToken.length() > 0) {
+                            command.add(currentToken.toString());
+                        }
+                        currentToken = new StringBuilder();
+                        currentToken.append(symbol);
                     }
-                    currentToken = new StringBuilder();
-                    currentToken.append(symbol);
+                    doubleQuote = !doubleQuote;
                     prev = symbol;
                     continue;
                 }
