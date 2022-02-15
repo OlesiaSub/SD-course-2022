@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -134,21 +135,23 @@ public class Executor {
             boolean wasCommand = false;
             boolean first = true;
             for (char symbol : currentRequest.toCharArray()) {
-                if (symbol == '\'' && !doubleQuote) {
+                if (symbol == '\'' && !doubleQuote && (prev == ' ' || prev == '=')) {
                     singleQuote = !singleQuote;
                     if (currentToken.length() > 0) {
                         command.add(currentToken.toString());
                     }
                     currentToken = new StringBuilder();
+                    currentToken.append(symbol);
                     prev = symbol;
                     continue;
                 }
-                if (symbol == '\"' && !singleQuote) {
+                if (symbol == '\"' && !singleQuote && (prev == ' ' || prev == '=')) {
                     doubleQuote = !doubleQuote;
                     if (currentToken.length() > 0) {
                         command.add(currentToken.toString());
                     }
                     currentToken = new StringBuilder();
+                    currentToken.append(symbol);
                     prev = symbol;
                     continue;
                 }
@@ -184,6 +187,20 @@ public class Executor {
             }
             if (currentToken.length() > 0) {
                 command.add(currentToken.toString());
+            }
+            if (Objects.equals(command.get(0), "assignment")) {
+                return command;
+            } else {
+                for (int i = 0; i < command.size(); i++) {
+                    String s = command.get(i);
+                    if (i > 0 && s.length() > 1) {
+                        char firstCh = s.charAt(0);
+                        char lastCh = s.charAt(s.length() - 1);
+                        if ((firstCh == '"' || lastCh == '"') || (firstCh == '\'' && lastCh == '\'')) {
+                            command.set(i, s.substring(1, s.length() - 1));
+                        }
+                    }
+                }
             }
             return command;
         }
