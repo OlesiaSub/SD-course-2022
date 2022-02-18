@@ -4,6 +4,7 @@ import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -17,7 +18,11 @@ import java.util.logging.Logger;
  */
 public class Executor {
 
-    private final Logger logger = Logger.getLogger(Executor.class.getName());
+    private final Logger logger;
+
+    public Executor() throws MyShellException {
+        logger = (new LoggerWithHandler(Executor.class.getName())).getLogger();
+    }
 
     /**
      * Parses user input, transfers it to the corresponding class and executes it there
@@ -87,8 +92,8 @@ public class Executor {
      * Creates an instance of class [clazz], invokes command [commandName] and returns invocation Result
      */
     private Result processInvocation(Class<?> clazz, Class<?>[] formalParameters, ArrayList<String> staticArgs,
-                           ArrayList<String> dynamicArgs, String instanceMethodName, String commandName)
-    throws MyShellException {
+                                     ArrayList<String> dynamicArgs, String instanceMethodName, String commandName)
+            throws MyShellException {
         Result output;
         try {
             Object newInstance = clazz.getDeclaredConstructor(formalParameters).newInstance(staticArgs, dynamicArgs);

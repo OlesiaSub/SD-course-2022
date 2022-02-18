@@ -47,7 +47,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testEchoStaticArgs() {
+    public void testEchoStaticArgs() throws MyShellException {
         echo = new CommandEcho(new ArrayList<>(List.of("test_value")), new ArrayList<>());
         Result result = echo.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -55,7 +55,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testEchoDynamicArgs() {
+    public void testEchoDynamicArgs() throws MyShellException {
         echo = new CommandEcho(new ArrayList<>(), new ArrayList<>(List.of("test_value")));
         Result result = echo.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -63,7 +63,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testEchoMultipleStaticArgs() {
+    public void testEchoMultipleStaticArgs() throws MyShellException {
         echo = new CommandEcho(new ArrayList<>(List.of("test_value1", "test_value2")), new ArrayList<>());
         Result result = echo.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -71,7 +71,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testEchoMultipleDynamicArgs() {
+    public void testEchoMultipleDynamicArgs() throws MyShellException {
         echo = new CommandEcho(new ArrayList<>(), new ArrayList<>(List.of("test_value1", "test_value2")));
         Result result = echo.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -79,7 +79,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testEchoDynamicAndStaticArgs() {
+    public void testEchoDynamicAndStaticArgs() throws MyShellException {
         echo = new CommandEcho(new ArrayList<>(List.of("test_value")), new ArrayList<>(List.of("test_value")));
         Result result = echo.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -87,7 +87,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testEchoNoArgs() {
+    public void testEchoNoArgs() throws MyShellException {
         echo = new CommandEcho(new ArrayList<>(), new ArrayList<>());
         Result result = echo.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -95,7 +95,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testPwdStaticArgs() {
+    public void testPwdStaticArgs() throws MyShellException {
         pwd = new CommandPwd(new ArrayList<>(List.of("test_value")), new ArrayList<>());
         Result result = pwd.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -103,7 +103,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testPwdDynamicArgs() {
+    public void testPwdDynamicArgs() throws MyShellException {
         pwd = new CommandPwd(new ArrayList<>(), new ArrayList<>(List.of("test_value")));
         Result result = pwd.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -111,7 +111,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testPwdDynamicAndStaticArgs() {
+    public void testPwdDynamicAndStaticArgs() throws MyShellException {
         pwd = new CommandPwd(new ArrayList<>(List.of("test_value")), new ArrayList<>(List.of("test_value")));
         Result result = pwd.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -119,7 +119,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testPwdNoArgs() {
+    public void testPwdNoArgs() throws MyShellException {
         pwd = new CommandPwd(new ArrayList<>(), new ArrayList<>());
         Result result = pwd.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -127,7 +127,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testWcStaticArgs() {
+    public void testWcStaticArgs() throws MyShellException {
         wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")), new ArrayList<>());
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -139,7 +139,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testWcDynamicArgs() {
+    public void testWcDynamicArgs() throws MyShellException {
         wc = new CommandWc(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -150,7 +150,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testWcMultipleStaticArgs() {
+    public void testWcMultipleStaticArgs() throws MyShellException {
         wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>());
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -166,14 +166,14 @@ public class CommandsTest {
     }
 
     @Test
-    public void testWcMultipleDynamicArgs() {
+    public void testWcMultipleDynamicArgs() throws MyShellException {
         wc = new CommandWc(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")));
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
     }
 
     @Test
-    public void testWcDynamicAndStaticArgs() {
+    public void testWcDynamicAndStaticArgs() throws MyShellException {
         wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -189,7 +189,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testWcNoArgs() {
+    public void testWcNoArgs() throws MyShellException {
         wc = new CommandWc(new ArrayList<>(), new ArrayList<>());
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
@@ -197,7 +197,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testCatStaticArgs() {
+    public void testCatStaticArgs() throws MyShellException {
         cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")), new ArrayList<>());
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -205,7 +205,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testCatDynamicArgs() {
+    public void testCatDynamicArgs() throws MyShellException {
         cat = new CommandCat(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -213,7 +213,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testCatMultipleStaticArgs() {
+    public void testCatMultipleStaticArgs() throws MyShellException {
         cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>());
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -221,14 +221,14 @@ public class CommandsTest {
     }
 
     @Test
-    public void testCatMultipleDynamicArgs() {
+    public void testCatMultipleDynamicArgs() throws MyShellException {
         cat = new CommandCat(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
     }
 
     @Test
-    public void testCatDynamicAndStaticArgs() {
+    public void testCatDynamicAndStaticArgs() throws MyShellException {
         cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -236,7 +236,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testCatNoArgs() {
+    public void testCatNoArgs() throws MyShellException {
         cat = new CommandCat(new ArrayList<>(), new ArrayList<>());
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
@@ -244,7 +244,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testAssignmentStaticArgs() {
+    public void testAssignmentStaticArgs() throws MyShellException {
         assignment = new CommandAssignment(new ArrayList<>(List.of("a", "5")), new ArrayList<>());
         Result result = assignment.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -253,21 +253,21 @@ public class CommandsTest {
     }
 
     @Test
-    public void testAssignmentBadStaticArgs() {
+    public void testAssignmentBadStaticArgs() throws MyShellException {
         assignment = new CommandAssignment(new ArrayList<>(List.of("a", "5", "6")), new ArrayList<>());
         Result result = assignment.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
     }
 
     @Test
-    public void testAssignmentDynamicArgs() {
+    public void testAssignmentDynamicArgs() throws MyShellException {
         assignment = new CommandAssignment(new ArrayList<>(List.of("a", "5")), new ArrayList<>(List.of("a", "5")));
         Result result = assignment.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
     }
 
     @Test
-    public void testExit() {
+    public void testExit() throws MyShellException {
         assignment = new CommandAssignment(new ArrayList<>(List.of("a", "5")), new ArrayList<>());
         assignment.execute();
         exit = new CommandExit(new ArrayList<>(), new ArrayList<>());
@@ -277,7 +277,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testOuterCommandDir() {
+    public void testOuterCommandDir() throws MyShellException {
         outer = new CommandExternal(new ArrayList<>(List.of("mkdir", temporaryFolder.getPath() + "/dir")), new ArrayList<>());
         Result result = outer.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -289,7 +289,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testOuterCommandTouch() {
+    public void testOuterCommandTouch() throws MyShellException {
         outer = new CommandExternal(new ArrayList<>(List.of("touch", temporaryFolder.getPath() + "/file.txt")), new ArrayList<>());
         Result result = outer.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -297,7 +297,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testNonExistingOuterCommand() {
+    public void testNonExistingOuterCommand() throws MyShellException {
         outer = new CommandExternal(new ArrayList<>(List.of("команда", temporaryFolder.getPath() + "/file.txt")), new ArrayList<>());
         Result result = outer.execute();
         Assertions.assertEquals(ExitCode.UNKNOWN_PROBLEM, result.getExitCode());

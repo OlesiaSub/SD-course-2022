@@ -1,7 +1,10 @@
 package hse.sd.myshell.commands.supported;
 
 import hse.sd.myshell.Environment;
+import hse.sd.myshell.LoggerWithHandler;
+import hse.sd.myshell.MyShellException;
 import hse.sd.myshell.commands.AbstractCommand;
+import hse.sd.myshell.commands.CommandExternal;
 import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
@@ -16,10 +19,11 @@ import java.util.logging.Logger;
 public class CommandAssignment implements AbstractCommand {
     private ArrayList<String> staticArgs = new ArrayList<>();
     private final ArrayList<String> dynamicArgs = new ArrayList<>();
-    private final Logger logger = Logger.getLogger(CommandAssignment.class.getName());
+    private final Logger logger;
     private ExitCode exitCode = ExitCode.OK;
 
-    public CommandAssignment(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
+    public CommandAssignment(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
+        logger = (new LoggerWithHandler(CommandAssignment.class.getName())).getLogger();
         validateStaticArgs(staticArgs);
         validateDynamicArgs(dynamicArgs);
     }
