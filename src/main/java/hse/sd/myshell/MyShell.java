@@ -34,7 +34,7 @@ public class MyShell {
             Executor executor = new Executor();
             while (true) {
                 System.out.print(">> ");
-                String commandSequence = "";
+                String commandSequence;
                 try {
                     commandSequence = scanner.next();
                 } catch (NoSuchElementException e) {
@@ -51,22 +51,16 @@ public class MyShell {
                     continue;
                 }
                 if (output.getExitCode() == ExitCode.EXIT) {
-                    logger.log(Level.INFO, "Execution finished with exit code "
-                            + output.getExitCode() + ", exiting the application");
+                    System.out.println("Exiting MyShell...");
                     System.exit(0);
                 }
-                if (output.getExitCode() != ExitCode.OK) {
-                    logger.log(Level.WARNING, "Execution finished with exit code " + output.getExitCode());
-                    continue;
-                }
-                logger.log(Level.INFO, "Execution finished with exit code " + output.getExitCode());
                 for (String res : output.getResult()) {
                     System.out.println(res);
                 }
-                System.out.println();
                 System.out.flush();
             }
         } catch (MyShellException e) {
+            logger.log(Level.WARNING, e.getMessage());
             System.out.println(e.getMessage());
         }
     }

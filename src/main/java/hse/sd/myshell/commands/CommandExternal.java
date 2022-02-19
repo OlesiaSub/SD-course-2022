@@ -69,10 +69,11 @@ public class CommandExternal implements AbstractCommand {
             Process process = builder.start();
             output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             if (process.waitFor() != 0) {
-                logger.log(Level.WARNING, "Exit code " + process.exitValue());
+                logger.log(Level.WARNING, "External process exit code " + process.exitValue() + ", setting to UNKNOWN_PROBLEM");
                 exitCode = ExitCode.UNKNOWN_PROBLEM;
             }
         } catch (IOException | InterruptedException e) {
+            System.out.println(e.getMessage());
             logger.log(Level.WARNING, e.getMessage());
             exitCode = ExitCode.UNKNOWN_PROBLEM;
         }

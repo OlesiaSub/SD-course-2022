@@ -42,6 +42,28 @@ public class Executor {
         String commandName = commandArgs.get(0);
         commandArgs.remove(0);
         result = commandRedirect(commandName, commandArgs, new ArrayList<>());
+        switch (result.getExitCode()) {
+            case EXIT: {
+                logger.log(Level.INFO, "Execution finished with exit code "
+                        + result.getExitCode() + ", exiting the application");
+                break;
+            }
+            case BAD_ARGS: {
+                logger.log(Level.INFO, "Execution finished with exit code " + result.getExitCode());
+                System.out.println("Wrong arguments were provided for command " + commandName +
+                        ". Arguments: " + commandArgs);
+                break;
+            }
+            case OK: {
+                logger.log(Level.WARNING, "Execution finished with exit code " + result.getExitCode());
+                break;
+            }
+            case UNKNOWN_PROBLEM: {
+                logger.log(Level.INFO, "Execution finished with exit code " + result.getExitCode());
+                System.out.println("An unknown problem occurred during execution.");
+                break;
+            }
+        }
         return result;
     }
 
