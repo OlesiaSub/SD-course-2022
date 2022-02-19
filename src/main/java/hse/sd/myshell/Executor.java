@@ -126,7 +126,7 @@ public class Executor {
         } catch (InstantiationException e) {
             throw new MyShellException("Can not instantiate command " + commandName + "'s class");
         } catch (IllegalAccessException | InvocationTargetException e) {
-            System.err.println(e.getMessage() + '\n' + e.getCause());
+            System.out.println(e.getMessage() + '\n' + e.getCause());
             throw new MyShellException("Can not invoke required method of the command " + commandName);
         }
         return output;
