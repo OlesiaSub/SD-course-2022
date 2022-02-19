@@ -1,6 +1,9 @@
 package hse.sd.myshell.commands.supported;
 
+import hse.sd.myshell.LoggerWithHandler;
+import hse.sd.myshell.MyShellException;
 import hse.sd.myshell.commands.AbstractCommand;
+import hse.sd.myshell.commands.CommandExternal;
 import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
@@ -20,9 +23,10 @@ public class CommandCat implements AbstractCommand {
     private ArrayList<File> staticArgs = new ArrayList<>();
     private ArrayList<String> dynamicArgs = new ArrayList<>();
     private ExitCode exitCode = ExitCode.OK;
-    private final Logger logger = Logger.getLogger(CommandCat.class.getName());
+    private final Logger logger;
 
-    public CommandCat(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
+    public CommandCat(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
+        logger = (new LoggerWithHandler(CommandCat.class.getName())).getLogger();
         validateStaticArgs(staticArgs);
         validateDynamicArgs(dynamicArgs);
     }

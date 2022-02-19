@@ -18,7 +18,11 @@ import java.util.logging.Logger;
  */
 public class Executor {
 
-    private final Logger logger = Logger.getLogger(Executor.class.getName());
+    private final Logger logger;
+
+    public Executor() throws MyShellException {
+        logger = (new LoggerWithHandler(Executor.class.getName())).getLogger();
+    }
 
     /**
      * Parses user input, transfers it to the corresponding class and executes it there
@@ -40,8 +44,27 @@ public class Executor {
             }
             result = commandRedirect(commandName, staticArgs, dynamicArgs);
             prevResult = result.getResult();
-            if (result.getExitCode() == ExitCode.EXIT) {
-                return result;
+            switch (result.getExitCode()) {
+                case EXIT: {
+                    logger.log(Level.INFO, "Execution finished with exit code "
+                            + result.getExitCode() + ", exiting the application");
+                    return result;
+                }
+                case BAD_ARGS: {
+                    logger.log(Level.INFO, "Execution finished with exit code " + result.getExitCode());
+                    System.out.println("Wrong arguments were provided for command " + commandName +
+                            ". Static arguments: " + staticArgs + ", dynamic arguments: " + dynamicArgs);
+                    break;
+                }
+                case OK: {
+                    logger.log(Level.WARNING, "Execution finished with exit code " + result.getExitCode());
+                    break;
+                }
+                case UNKNOWN_PROBLEM: {
+                    logger.log(Level.INFO, "Execution finished with exit code " + result.getExitCode());
+                    System.out.println("An unknown problem occurred during execution.");
+                    break;
+                }
             }
         }
         return result;
@@ -94,8 +117,8 @@ public class Executor {
      * Creates an instance of class [clazz], invokes command [commandName] and returns invocation Result
      */
     private Result processInvocation(Class<?> clazz, Class<?>[] formalParameters, ArrayList<String> staticArgs,
-                           ArrayList<String> dynamicArgs, String instanceMethodName, String commandName)
-    throws MyShellException {
+                                     ArrayList<String> dynamicArgs, String instanceMethodName, String commandName)
+            throws MyShellException {
         Result output;
         try {
             Object newInstance = clazz.getDeclaredConstructor(formalParameters).newInstance(staticArgs, dynamicArgs);
@@ -106,7 +129,7 @@ public class Executor {
         } catch (InstantiationException e) {
             throw new MyShellException("Can not instantiate command " + commandName + "'s class");
         } catch (IllegalAccessException | InvocationTargetException e) {
-            System.err.println(e.getMessage() + '\n' + e.getCause());
+            System.out.println(e.getMessage() + '\n' + e.getCause());
             throw new MyShellException("Can not invoke required method of the command " + commandName);
         }
         return output;

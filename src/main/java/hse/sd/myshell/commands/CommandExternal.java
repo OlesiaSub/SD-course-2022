@@ -1,6 +1,9 @@
 package hse.sd.myshell.commands;
 
 import hse.sd.myshell.Environment;
+import hse.sd.myshell.Executor;
+import hse.sd.myshell.LoggerWithHandler;
+import hse.sd.myshell.MyShellException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -18,7 +21,7 @@ import java.util.logging.Logger;
 public class CommandExternal implements AbstractCommand {
     private ArrayList<String> staticArgs = new ArrayList<>();
     private ArrayList<String> dynamicArgs = new ArrayList<>();
-    private final Logger logger = Logger.getLogger(CommandExternal.class.getName());
+    private final Logger logger;
     private ExitCode exitCode = ExitCode.OK;
 
     /**
@@ -27,7 +30,8 @@ public class CommandExternal implements AbstractCommand {
      * @param staticArgs  static arguments
      * @param dynamicArgs dynamic arguments
      */
-    public CommandExternal(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
+    public CommandExternal(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
+        logger = (new LoggerWithHandler(CommandExternal.class.getName())).getLogger();
         validateStaticArgs(staticArgs);
         validateDynamicArgs(dynamicArgs);
     }
@@ -65,10 +69,11 @@ public class CommandExternal implements AbstractCommand {
             Process process = builder.start();
             output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             if (process.waitFor() != 0) {
-                logger.log(Level.WARNING, "Exit code " + process.exitValue());
+                logger.log(Level.WARNING, "External process exit code " + process.exitValue() + ", setting to UNKNOWN_PROBLEM");
                 exitCode = ExitCode.UNKNOWN_PROBLEM;
             }
         } catch (IOException | InterruptedException e) {
+            System.out.println(e.getMessage());
             logger.log(Level.WARNING, e.getMessage());
             exitCode = ExitCode.UNKNOWN_PROBLEM;
         }
