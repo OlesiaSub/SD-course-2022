@@ -4,7 +4,6 @@ import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
