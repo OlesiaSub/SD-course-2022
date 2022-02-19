@@ -54,7 +54,7 @@ public class CommandEcho implements AbstractCommand {
     @NotNull
     public Result execute() {
         StringBuilder result = new StringBuilder();
-        if ((staticArgs.size() > 0 && dynamicArgs.size() > 0) || (staticArgs.size() == 0 && dynamicArgs.size() == 0)) {
+        if (staticArgs.size() == 0 && dynamicArgs.size() == 0) {
             return new Result(new ArrayList<>(), exitCode);
         }
         if (staticArgs.size() > 0) {

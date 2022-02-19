@@ -83,7 +83,7 @@ public class CommandsTest {
         echo = new CommandEcho(new ArrayList<>(List.of("test_value")), new ArrayList<>(List.of("test_value")));
         Result result = echo.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(new ArrayList<>(), result.getResult());
+        Assertions.assertEquals(new ArrayList<>(List.of("test_value")), result.getResult());
     }
 
     @Test
