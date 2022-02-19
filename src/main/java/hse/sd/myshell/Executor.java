@@ -51,7 +51,7 @@ public class Executor {
                     return result;
                 }
                 case BAD_ARGS: {
-                    logger.log(Level.INFO, "Execution finished with exit code " + result.getExitCode());
+                    logger.log(Level.WARNING, "Execution finished with exit code " + result.getExitCode());
                     System.out.println("Wrong arguments were provided for command " + commandName +
                             ". Static arguments: " + staticArgs + ", dynamic arguments: " + dynamicArgs);
                     break;
