@@ -341,7 +341,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepWithoutFlags() {
+    public void testGrepWithoutFlags() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("test", temporaryFolder.getPath() + File.separator + "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -355,7 +355,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepCaseIgnore() {
+    public void testGrepCaseIgnore() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("-i", "test", temporaryFolder.getPath() + File.separator + "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -371,7 +371,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepWholeWord() {
+    public void testGrepWholeWord() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("-w", "test", temporaryFolder.getPath() + File.separator + "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -381,7 +381,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepContextSimple() {
+    public void testGrepContextSimple() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("-A", "1", "test", temporaryFolder.getPath() + File.separator + "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -400,7 +400,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepContextIntersection() {
+    public void testGrepContextIntersection() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("-A", "2", "test", temporaryFolder.getPath() + File.separator + "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -422,7 +422,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepWholeWordIgnoreCase() {
+    public void testGrepWholeWordIgnoreCase() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("-w", "-i", "test", temporaryFolder.getPath() + File.separator + "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -434,7 +434,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepRegex1() {
+    public void testGrepRegex1() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("a?b", temporaryFolder.getPath() + File.separator + "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -447,7 +447,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepRegex2() {
+    public void testGrepRegex2() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("a+b+", temporaryFolder.getPath() + File.separator + "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -458,7 +458,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepRegex3() {
+    public void testGrepRegex3() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("a*b?c+", temporaryFolder.getPath() + File.separator + "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -475,7 +475,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepRegexWithContext() {
+    public void testGrepRegexWithContext() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("-A", "6", "^h", temporaryFolder.getPath() + File.separator + "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -496,7 +496,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepRegexWithCaseIgnore() {
+    public void testGrepRegexWithCaseIgnore() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("-i", "a?b", temporaryFolder.getPath() + File.separator + "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
@@ -511,7 +511,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepBadNum() {
+    public void testGrepBadNum() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("-A", "-1", "a?b", temporaryFolder.getPath() + File.separator + "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
@@ -519,7 +519,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepBadFile() {
+    public void testGrepBadFile() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("-A", "-1", "a?b", "test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
@@ -527,7 +527,7 @@ public class CommandsTest {
     }
 
     @Test
-    public void testGrepBadArg() {
+    public void testGrepBadArg() throws MyShellException {
         grep = new CommandGrep(new ArrayList<>(List.of("test_file3.txt")), new ArrayList<>());
         Result result = grep.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
