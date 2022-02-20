@@ -191,5 +191,5 @@ ____
 ## Схема архитектуры
 
 <br></br>
-![architecture](assets/SD.png)
+![architecture](assets/uml_diag.png)
 <br></br>
