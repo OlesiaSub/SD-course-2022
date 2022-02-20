@@ -22,6 +22,9 @@ public class ExecutorTest {
 
     private final Executor executor = new Executor();
 
+    public ExecutorTest() throws MyShellException {
+    }
+
     @BeforeEach
     public void createTemporaryWorkingDir() {
         try {

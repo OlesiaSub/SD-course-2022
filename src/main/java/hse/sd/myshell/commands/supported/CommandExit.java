@@ -1,7 +1,10 @@
 package hse.sd.myshell.commands.supported;
 
 import hse.sd.myshell.Environment;
+import hse.sd.myshell.LoggerWithHandler;
+import hse.sd.myshell.MyShellException;
 import hse.sd.myshell.commands.AbstractCommand;
+import hse.sd.myshell.commands.CommandExternal;
 import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
@@ -15,10 +18,11 @@ import java.util.logging.Logger;
 public class CommandExit implements AbstractCommand {
     private final ArrayList<String> staticArgs = new ArrayList<>();
     private final ArrayList<String> dynamicArgs = new ArrayList<>();
-    private final Logger logger = Logger.getLogger(CommandExit.class.getName());
+    private final Logger logger;
     private final ExitCode exitCode = ExitCode.EXIT;
 
-    public CommandExit(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) {
+    public CommandExit(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
+        logger = (new LoggerWithHandler(CommandExit.class.getName())).getLogger();
     }
 
     /**

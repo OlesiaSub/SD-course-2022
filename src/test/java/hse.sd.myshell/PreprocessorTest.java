@@ -46,6 +46,14 @@ public class PreprocessorTest {
     }
 
     @Test
+    public void testPreprocessWithSubstitutionNoVariable() {
+        Preprocessor preprocessor = new Preprocessor();
+        String str = "cat $test";
+        String result = preprocessor.process(str);
+        Assertions.assertEquals("cat  ", result);
+    }
+
+    @Test
     public void testPreprocessWithSubstitutionNoQuotes() {
         Preprocessor preprocessor = new Preprocessor();
         String str = "cat $FILE";
@@ -103,7 +111,7 @@ public class PreprocessorTest {
         Preprocessor preprocessor = new Preprocessor();
         String str = "echo $1";
         String result = preprocessor.process(str);
-        Assertions.assertEquals("echo $1 ", result);
+        Assertions.assertEquals("echo  ", result);
     }
 
     @Test
@@ -111,7 +119,7 @@ public class PreprocessorTest {
         Preprocessor preprocessor = new Preprocessor();
         String str = "echo $1ab";
         String result = preprocessor.process(str);
-        Assertions.assertEquals("echo $1 ab", result);
+        Assertions.assertEquals("echo  ab", result);
     }
 
     @Test
@@ -163,6 +171,6 @@ public class PreprocessorTest {
         String str = "echo $p | cat \"sd$x1&\" | echo 'dfjk\"$x1\"dgds\'";
         Environment.setVariableValue("x1", "x2");
         String result = preprocessor.process(str);
-        Assertions.assertEquals("echo $p | cat \"sdx2&\" | echo 'dfjk\"$x1\"dgds\'", result);
+        Assertions.assertEquals("echo   | cat \"sdx2&\" | echo 'dfjk\"$x1\"dgds\'", result);
     }
 }
