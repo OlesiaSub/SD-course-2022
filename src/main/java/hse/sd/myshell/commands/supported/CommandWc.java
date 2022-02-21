@@ -3,19 +3,18 @@ package hse.sd.myshell.commands.supported;
 import hse.sd.myshell.LoggerWithHandler;
 import hse.sd.myshell.MyShellException;
 import hse.sd.myshell.commands.AbstractCommand;
-import hse.sd.myshell.commands.CommandExternal;
 import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
+
+import static java.nio.file.Files.readString;
 
 /**
  * Class corresponding to the command wc.
@@ -73,26 +72,22 @@ public class CommandWc implements AbstractCommand {
             exitCode = ExitCode.BAD_ARGS;
             return new Result(new ArrayList<>(), exitCode);
         }
-        ArrayList<String> result = new ArrayList<>();
+        StringBuilder result = new StringBuilder();
         if (staticArgs.size() > 0) {
             for (File file : staticArgs) {
-                long lineCount = 0;
-                long wordCount = 0;
-                try (Stream<String> stream = Files.lines(file.toPath(), StandardCharsets.UTF_8);
-                     Stream<String> wcStream = Files.lines(file.toPath(), StandardCharsets.UTF_8)) {
-                    lineCount = stream.map(c -> c.chars().filter(x -> x == '\n').count()).reduce(0L, Long::sum) + 1;
-                    wordCount = wcStream.map(c -> c.chars().filter(Character::isWhitespace).count()).reduce(0L, Long::sum) + 1;
+                try {
+                    String content = readString(file.toPath());
+                    result.append(content.lines().count() + " " + content.replaceAll("\\s+", " ").trim().split(" ").length + " " + content.getBytes().length + " " + file.getPath() + "\n");
                 } catch (IOException e) {
                     exitCode = ExitCode.UNKNOWN_PROBLEM;
                     logger.log(Level.WARNING, "Unknown problem with file: " + e.getMessage());
                 }
-                result.add(String.valueOf(lineCount) + ' ' + wordCount + ' ' + file.length() + ' ' + file.getPath());
             }
         } else {
             for (String string : dynamicArgs) {
-                result.add(string.lines().count() + " " + (1 + string.chars().filter(Character::isWhitespace).count()) + " " + string.getBytes().length + "\n");
+                result.append(string.lines().count() + " " + string.replaceAll("\\s+", " ").trim().split(" ").length + " " + string.getBytes().length + "\n");
             }
         }
-        return new Result(result, exitCode);
+        return new Result(new ArrayList<>(Collections.singleton(result.toString().trim() + "\n")), exitCode);
     }
 }

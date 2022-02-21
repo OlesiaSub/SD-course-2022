@@ -67,6 +67,13 @@ public class CommandExternal implements AbstractCommand {
             builder.redirectError(ProcessBuilder.Redirect.INHERIT);
             builder.environment().putAll(Environment.getEnvironment());
             Process process = builder.start();
+            if (!dynamicArgs.isEmpty()) {
+                OutputStream stdin = process.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
+                writer.write(dynamicArgs.get(0));
+                writer.flush();
+                writer.close();
+            }
             output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             if (process.waitFor() != 0) {
                 logger.log(Level.WARNING, "External process exit code " + process.exitValue() + ", setting to UNKNOWN_PROBLEM");

@@ -33,6 +33,7 @@ public class CommandsTest {
         try {
             final File test_file1 = new File(temporaryFolder, "test_file1.txt");
             final File test_file2 = new File(temporaryFolder, "test_file2.txt");
+            final File test_file_bad_whitespaces = new File(temporaryFolder, "test_file_bad_whitespaces.txt");
             FileWriter fw1 = new FileWriter(test_file1);
             BufferedWriter bw1 = new BufferedWriter(fw1);
             bw1.write("content of test file");
@@ -41,6 +42,10 @@ public class CommandsTest {
             BufferedWriter bw2 = new BufferedWriter(fw2);
             bw2.write("long content of other test file");
             bw2.close();
+            FileWriter fwBadWhitespaces = new FileWriter(test_file_bad_whitespaces);
+            BufferedWriter bwBadWhitespaces = new BufferedWriter(fwBadWhitespaces);
+            bwBadWhitespaces.write("content      of     test     file");
+            bwBadWhitespaces.close();
         } catch (IOException e) {
             System.out.println("Problems with test files");
         }
@@ -139,6 +144,18 @@ public class CommandsTest {
     }
 
     @Test
+    public void testWcBadWhitespaces() throws MyShellException {
+        wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file_bad_whitespaces.txt")), new ArrayList<>());
+        Result result = wc.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(1, result.getResult().size());
+        String[] res = result.getResult().get(0).split(" ");
+        Assertions.assertEquals("1", res[0]);
+        Assertions.assertEquals("4", res[1]);
+        Assertions.assertEquals("33", res[2]);
+    }
+
+    @Test
     public void testWcDynamicArgs() throws MyShellException {
         wc = new CommandWc(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = wc.execute();
@@ -154,15 +171,14 @@ public class CommandsTest {
         wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>());
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(2, result.getResult().size());
-        String[] res = result.getResult().get(0).split(" ");
+        Assertions.assertEquals(1, result.getResult().size());
+        String[] res = result.getResult().get(0).split("\\s+");
         Assertions.assertEquals("1", res[0]);
         Assertions.assertEquals("4", res[1]);
         Assertions.assertEquals("20", res[2]);
-        res = result.getResult().get(1).split(" ");
-        Assertions.assertEquals("1", res[0]);
-        Assertions.assertEquals("6", res[1]);
-        Assertions.assertEquals("31", res[2]);
+        Assertions.assertEquals("1", res[4]);
+        Assertions.assertEquals("6", res[5]);
+        Assertions.assertEquals("31", res[6]);
     }
 
     @Test
@@ -177,15 +193,14 @@ public class CommandsTest {
         wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(2, result.getResult().size());
-        String[] res = result.getResult().get(0).split(" ");
+        Assertions.assertEquals(1, result.getResult().size());
+        String[] res = result.getResult().get(0).split("\\s+");
         Assertions.assertEquals("1", res[0]);
         Assertions.assertEquals("4", res[1]);
         Assertions.assertEquals("20", res[2]);
-        res = result.getResult().get(1).split(" ");
-        Assertions.assertEquals("1", res[0]);
-        Assertions.assertEquals("6", res[1]);
-        Assertions.assertEquals("31", res[2]);
+        Assertions.assertEquals("1", res[4]);
+        Assertions.assertEquals("6", res[5]);
+        Assertions.assertEquals("31", res[6]);
     }
 
     @Test
@@ -201,7 +216,7 @@ public class CommandsTest {
         cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")), new ArrayList<>());
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(new ArrayList<>(List.of("content of test file\n")), result.getResult());
+        Assertions.assertEquals(new ArrayList<>(List.of("content of test file")), result.getResult());
     }
 
     @Test
@@ -209,7 +224,7 @@ public class CommandsTest {
         cat = new CommandCat(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt\n")), result.getResult());
+        Assertions.assertEquals(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")), result.getResult());
     }
 
     @Test
@@ -217,7 +232,7 @@ public class CommandsTest {
         cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>());
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(new ArrayList<>(List.of("content of test file\nlong content of other test file\n")), result.getResult());
+        Assertions.assertEquals(new ArrayList<>(List.of("content of test file\nlong content of other test file")), result.getResult());
     }
 
     @Test
@@ -232,7 +247,7 @@ public class CommandsTest {
         cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(new ArrayList<>(List.of("content of test file\nlong content of other test file\n")), result.getResult());
+        Assertions.assertEquals(new ArrayList<>(List.of("content of test file\nlong content of other test file")), result.getResult());
     }
 
     @Test

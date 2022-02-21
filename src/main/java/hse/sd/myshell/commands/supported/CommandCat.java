@@ -76,7 +76,7 @@ public class CommandCat implements AbstractCommand {
         if (staticArgs.size() > 0) {
             for (File file : staticArgs) {
                 try {
-                    result.append(new String(Files.readAllBytes(file.toPath())) + '\n');
+                    result.append(new String(Files.readAllBytes(file.toPath())) + "\n");
                 } catch (IOException e) {
                     exitCode = ExitCode.UNKNOWN_PROBLEM;
                     logger.log(Level.WARNING, "Unknown problem with file: " + e.getMessage());
@@ -84,9 +84,9 @@ public class CommandCat implements AbstractCommand {
             }
         } else {
             for (String str : dynamicArgs) {
-                result.append(str + '\n');
+                result.append(str + "\n");
             }
         }
-        return new Result(new ArrayList<>(Collections.singleton(result.toString())), exitCode);
+        return new Result(new ArrayList<>(Collections.singleton(result.deleteCharAt(result.length() - 1).toString())), exitCode);
     }
 }

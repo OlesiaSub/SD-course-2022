@@ -66,6 +66,6 @@ public class CommandEcho implements AbstractCommand {
                 result.append(str + ' ');
             }
         }
-        return new Result(new ArrayList<>(Collections.singleton(result.deleteCharAt(result.length() - 1).toString())), exitCode);
+        return new Result(new ArrayList<>(Collections.singleton(result.toString().trim())), exitCode);
     }
 }

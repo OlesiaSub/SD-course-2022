@@ -38,6 +38,7 @@ public class Executor {
         Result result = new Result(new ArrayList<>(), ExitCode.EXIT);
         ArrayList<String> prevResult = new ArrayList<>();
         while (!(staticArgs = parser.getNext()).equals(Collections.EMPTY_LIST)) {
+            dynamicArgs.clear();
             String commandName = staticArgs.remove(0);
             if (!prevResult.isEmpty()) {
                 dynamicArgs.addAll(prevResult);
