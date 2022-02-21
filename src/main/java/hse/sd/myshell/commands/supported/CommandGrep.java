@@ -164,7 +164,6 @@ public class CommandGrep implements AbstractCommand {
             regularExpression = "\\b" + regularExpression + "\\b";
         }
         if (command.hasOption('i')) {
-            regularExpression = regularExpression.toLowerCase();
             pattern = Pattern.compile(regularExpression, Pattern.CASE_INSENSITIVE);
         } else {
             pattern = Pattern.compile(regularExpression);
