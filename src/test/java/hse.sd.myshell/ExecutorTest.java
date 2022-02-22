@@ -2,8 +2,10 @@ package hse.sd.myshell;
 
 import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
+import hse.sd.myshell.commands.supported.CommandCat;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -28,11 +30,17 @@ public class ExecutorTest {
     @BeforeEach
     public void createTemporaryWorkingDir() {
         try {
-            final File test_file1 = new File(temporaryFolder, "test_file.txt");
-            FileWriter fw1 = new FileWriter(test_file1);
+            final File test_file = new File(temporaryFolder, "test_file.txt");
+            FileWriter fw1 = new FileWriter(test_file);
             BufferedWriter bw1 = new BufferedWriter(fw1);
             bw1.write("some content\n other content");
             bw1.close();
+            final File script = new File(temporaryFolder, "script.sh");
+            FileWriter fw2 = new FileWriter(script);
+            BufferedWriter bw2 = new BufferedWriter(fw2);
+            bw2.write("#!/bin/bash\n" +
+                    "echo \"Hello, \" $1");
+            bw2.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -67,6 +75,127 @@ public class ExecutorTest {
             Result result = executor.executeAll("ls | exit | pwd");
             Assertions.assertEquals(ExitCode.EXIT, result.getExitCode());
             Assertions.assertEquals(Collections.EMPTY_LIST, result.getResult());
+        });
+    }
+
+    @Test
+    public void testPipeAtTheEnd() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("ls |");
+            Assertions.assertEquals(ExitCode.UNKNOWN_PROBLEM, result.getExitCode());
+        });
+    }
+
+    @Test
+    public void testJustPipe() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("|");
+            Assertions.assertEquals(ExitCode.UNKNOWN_PROBLEM, result.getExitCode());
+        });
+    }
+
+    @Test
+    public void testSeveralPipesBetweenCommands() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("ls | | pwd");
+            Assertions.assertEquals(ExitCode.UNKNOWN_PROBLEM, result.getExitCode());
+        });
+    }
+
+    @Test
+    public void testCommandNameInQuotes() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("\"echo\" hello");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+            Assertions.assertEquals(new ArrayList<>(List.of("hello")), result.getResult());
+        });
+    }
+
+    @Test
+    public void testEchoQuote() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("echo \"'\"");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+            Assertions.assertEquals(new ArrayList<>(List.of("'")), result.getResult());
+        });
+    }
+
+    @Test
+    public void testArgumentWithQuotes() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("cat " + temporaryFolder.getPath() + File.separator + "test_'file.txt'");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+            Assertions.assertEquals(new ArrayList<>(List.of("some content\n other content")), result.getResult());
+        });
+    }
+
+    @Test
+    public void testArgumentWithQuotesFirst() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("cat " + temporaryFolder.getPath() + File.separator + "'test_'file.txt");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+            Assertions.assertEquals(new ArrayList<>(List.of("some content\n other content")), result.getResult());
+        });
+    }
+
+    @Test
+    public void testExternalCommandStreams() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("echo file | cat");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+            Assertions.assertEquals(new ArrayList<>(List.of("file")), result.getResult());
+        });
+    }
+
+    @Test
+    public void testExternalCommandArgumentStream() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("echo olesya | bash script.sh");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+            Assertions.assertEquals(new ArrayList<>(List.of("Hello, olesya")), result.getResult());
+        });
+    }
+
+    @Test
+    public void testSimpleAssignmentSuccess() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("x=hello");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        });
+    }
+
+    @Test
+    public void testAssignmentQuotesSuccess() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("x=\"hello\"");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        });
+    }
+
+    @Test
+    public void testAssignmentQuotesSpacesSuccess() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("x=\"  hello \"");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        });
+    }
+
+    @Test
+    @Disabled // todo Кире добавить проверку
+    public void testAssignmentVariableInQuotes() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("\"x\"=hell");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        });
+    }
+
+    @Test
+    public void testNotEnclosedQuotes() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("x=\"hello");
+            Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
+            result = executor.executeAll("echo hello | echo \"");
+            Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
         });
     }
 }

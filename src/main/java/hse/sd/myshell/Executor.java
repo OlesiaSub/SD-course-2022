@@ -6,10 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,11 +30,20 @@ public class Executor {
      */
     public Result executeAll(@NotNull String commandSequence) throws MyShellException {
         CommandParser parser = new CommandParser(commandSequence);
-        ArrayList<String> staticArgs;
+        ArrayList<String> staticArgs = new ArrayList<>();
         ArrayList<String> dynamicArgs = new ArrayList<>();
         Result result = new Result(new ArrayList<>(), ExitCode.EXIT);
         ArrayList<String> prevResult = new ArrayList<>();
-        while (!(staticArgs = parser.getNext()).equals(Collections.EMPTY_LIST)) {
+        while (true) {
+            try {
+                staticArgs = parser.getNext();
+            } catch (MyShellException e) {
+                System.out.println(e.getMessage());
+                return new Result(staticArgs, ExitCode.BAD_ARGS);
+            }
+            if (staticArgs.equals(Collections.EMPTY_LIST)) {
+                break;
+            }
             dynamicArgs.clear();
             String commandName = staticArgs.remove(0);
             if (!prevResult.isEmpty()) {
@@ -55,7 +61,7 @@ public class Executor {
                     logger.log(Level.WARNING, "Execution finished with exit code " + result.getExitCode());
                     System.out.println("Wrong arguments were provided for command " + commandName +
                             ". Static arguments: " + staticArgs + ", dynamic arguments: " + dynamicArgs);
-                    break;
+                    return result;
                 }
                 case OK: {
                     logger.log(Level.WARNING, "Execution finished with exit code " + result.getExitCode());
@@ -64,7 +70,7 @@ public class Executor {
                 case UNKNOWN_PROBLEM: {
                     logger.log(Level.INFO, "Execution finished with exit code " + result.getExitCode());
                     System.out.println("An unknown problem occurred during execution.");
-                    break;
+                    return result;
                 }
             }
         }
@@ -166,8 +172,8 @@ public class Executor {
          *
          * @return list of strings, where the first string is a command name, other strings are its arguments
          */
-        public @NotNull ArrayList<String> getNext() {
-            if (currentRequest.isEmpty() || currentRequest.matches("^[ |]+$")) {
+        public @NotNull ArrayList<String> getNext() throws MyShellException {
+            if (currentRequest.isEmpty()) {
                 return new ArrayList<>();
             }
             ArrayList<String> command = new ArrayList<>();
@@ -179,44 +185,51 @@ public class Executor {
             boolean wasAssignment = false;
             boolean wasCommand = false;
             boolean first = true;
+            boolean wasSymbol = false;
             for (char symbol : currentRequest.toCharArray()) {
                 cut++;
-                if (symbol == '\'' && !doubleQuote && (prev == ' ' || prev == '=')) {
-                    if (singleQuote) {
-                        currentToken.append(symbol);
-                        command.add(currentToken.toString());
-                    } else {
-                        if (currentToken.length() > 0) {
-                            command.add(currentToken.toString());
+                if (!wasSymbol && symbol != '|' && symbol != ' ') {
+                    wasSymbol = true;
+                }
+                // todo one quote
+                if (symbol == '\'' && !doubleQuote) {
+                    if (!singleQuote) {
+                        if (prev == '=') {
+                            if (currentToken.length() > 0) {
+                                command.add(currentToken.toString());
+                            }
+                            currentToken.append(symbol);
+                            currentToken = new StringBuilder();
                         }
-                        currentToken = new StringBuilder();
-                        currentToken.append(symbol);
                     }
                     singleQuote = !singleQuote;
                     prev = symbol;
                     continue;
                 }
-                if (symbol == '\"' && !singleQuote && (prev == ' ' || prev == '=')) {
-                    if (doubleQuote) {
-                        currentToken.append(symbol);
-                        command.add(currentToken.toString());
-                    } else {
-                        if (currentToken.length() > 0) {
-                            command.add(currentToken.toString());
+                if (symbol == '\"' && !singleQuote) {
+                    if (!doubleQuote) {
+                        if (prev == '=') {
+                            if (currentToken.length() > 0) {
+                                command.add(currentToken.toString());
+                            }
+                            currentToken.append(symbol);
+                            currentToken = new StringBuilder();
                         }
-                        currentToken = new StringBuilder();
-                        currentToken.append(symbol);
                     }
                     doubleQuote = !doubleQuote;
                     prev = symbol;
                     continue;
                 }
+
                 if (singleQuote || doubleQuote) {
                     currentToken.append(symbol);
                     prev = symbol;
                     continue;
                 }
                 if (symbol == '|') {
+                    if (!wasSymbol) {
+                        command.add("|");
+                    }
                     break;
                 }
                 if (symbol == ' ') {
@@ -244,23 +257,16 @@ public class Executor {
                 currentToken.append(symbol);
                 prev = symbol;
             }
+            if (singleQuote || doubleQuote) {
+                throw new MyShellException("Quotes were not closed.");
+            }
             if (currentToken.length() > 0) {
                 command.add(currentToken.toString());
             }
-            currentRequest = currentRequest.substring(cut);
-            if (Objects.equals(command.get(0), "assignment")) {
-                return command;
+            if (currentRequest.substring(cut - 1).matches("^[ |]+$")) {
+                currentRequest = currentRequest.substring(cut - 1);
             } else {
-                for (int i = 0; i < command.size(); i++) {
-                    String s = command.get(i);
-                    if (i > 0 && s.length() > 1) {
-                        char firstCh = s.charAt(0);
-                        char lastCh = s.charAt(s.length() - 1);
-                        if ((firstCh == '"' || lastCh == '"') || (firstCh == '\'' && lastCh == '\'')) {
-                            command.set(i, s.substring(1, s.length() - 1));
-                        }
-                    }
-                }
+                currentRequest = currentRequest.substring(cut);
             }
             return command;
         }
