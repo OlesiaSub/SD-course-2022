@@ -43,7 +43,7 @@ public class Executor {
             if (!prevResult.isEmpty()) {
                 dynamicArgs.addAll(prevResult);
             }
-            result = commandRedirect(commandName, staticArgs, dynamicArgs);
+            result = launchCorrespondingCommand(commandName, staticArgs, dynamicArgs);
             prevResult = result.getResult();
             switch (result.getExitCode()) {
                 case EXIT: {
@@ -81,49 +81,59 @@ public class Executor {
      * @return result and exit code of the execution
      * @throws MyShellException in case there were errors during the execution
      */
-    private Result commandRedirect(@NotNull String commandName, @NotNull ArrayList<String> staticArgs,
-                                   @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
+    private Result launchCorrespondingCommand(@NotNull String commandName, @NotNull ArrayList<String> staticArgs,
+                                              @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
         String supportedCommandName = commandName;
         if (commandName.equals(commandName.toLowerCase())) {
             supportedCommandName = commandName.substring(0, 1).toUpperCase(Locale.ROOT)
                     + commandName.substring(1).toLowerCase(Locale.ROOT);
         }
-        String className = "Command" + supportedCommandName;
-        String externalClassName = "CommandExternal";
         String instanceMethodName = "execute";
         Class<?>[] formalParameters = {ArrayList.class, ArrayList.class};
+        Class<?> launchingClass = getLaunchingClass(supportedCommandName, commandName, staticArgs);
+        return processInvocation(launchingClass, formalParameters, staticArgs, dynamicArgs, instanceMethodName, commandName);
+    }
+
+    /**
+     * Checks if command [commandName] is supported.
+     * If there is no class that supports current command - it will be redirected to CommandExternal.
+     *
+     * @return class which will process command invocation
+     */
+    private Class<?> getLaunchingClass(String supportedCommandName, String commandName, ArrayList<String> staticArgs)
+            throws MyShellException {
         String packageName = getClass().getPackage().getName() + ".commands";
         String supportedPackageName = packageName + ".supported";
-        Class<?> clazz = null;
-        Result output;
+        String className = "Command" + supportedCommandName;
+        String externalClassName = "CommandExternal";
+        Class<?> launchingClass = null;
         try {
-            clazz = Class.forName(supportedPackageName + "." + className); // checking if current command is supported
+            launchingClass = Class.forName(supportedPackageName + "." + className);
         } catch (ClassNotFoundException e) {
             logger.log(Level.INFO, "Required command \"" + commandName +
                     "\" is not supported and will be identified as an external command");
         }
-        if (clazz == null) { // if there is no class that supports current command - it will be redirected to CommandExternal
+        if (launchingClass == null) {
             try {
-                clazz = Class.forName(packageName + "." + externalClassName);
+                launchingClass = Class.forName(packageName + "." + externalClassName);
                 staticArgs.add(0, commandName);
             } catch (ClassNotFoundException e) {
                 throw new MyShellException("Unable to execute external command " + commandName);
             }
         }
-        output = processInvocation(clazz, formalParameters, staticArgs, dynamicArgs, instanceMethodName, commandName);
-        return output;
+        return launchingClass;
     }
 
     /**
-     * Creates an instance of class [clazz], invokes command [commandName] and returns invocation Result
+     * Creates an instance of class [launchingClass], invokes command [commandName] and returns invocation Result
      */
-    private Result processInvocation(Class<?> clazz, Class<?>[] formalParameters, ArrayList<String> staticArgs,
+    private Result processInvocation(Class<?> launchingClass, Class<?>[] formalParameters, ArrayList<String> staticArgs,
                                      ArrayList<String> dynamicArgs, String instanceMethodName, String commandName)
             throws MyShellException {
         Result output;
         try {
-            Object newInstance = clazz.getDeclaredConstructor(formalParameters).newInstance(staticArgs, dynamicArgs);
-            Method method = clazz.getMethod(instanceMethodName);
+            Object newInstance = launchingClass.getDeclaredConstructor(formalParameters).newInstance(staticArgs, dynamicArgs);
+            Method method = launchingClass.getMethod(instanceMethodName);
             output = (Result) method.invoke(newInstance);
         } catch (NoSuchMethodException e) {
             throw new MyShellException("Can not find required method of the command " + commandName);
