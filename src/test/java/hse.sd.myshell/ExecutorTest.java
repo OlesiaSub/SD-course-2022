@@ -39,7 +39,9 @@ public class ExecutorTest {
             FileWriter fw2 = new FileWriter(script);
             BufferedWriter bw2 = new BufferedWriter(fw2);
             bw2.write("#!/bin/bash\n" +
-                    "echo \"Hello, \" $1");
+                    "echo \"STDOUT\"\n" +
+                    "1>&2 echo \"STDERR\"\n" +
+                    "echo Hello, $1");
             bw2.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -155,7 +157,7 @@ public class ExecutorTest {
             Result result = executor.executeAll("echo olesya | bash "
                     + temporaryFolder.getPath() + File.separator + "script.sh");
             Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-            Assertions.assertEquals(new ArrayList<>(List.of("Hello, \n")), result.getResult());
+            Assertions.assertEquals(new ArrayList<>(List.of("STDOUT\nHello,\n")), result.getResult());
         });
     }
 
@@ -215,6 +217,49 @@ public class ExecutorTest {
     public void testAssignmentToVariableContainingEQ() {
         Assertions.assertDoesNotThrow(() -> {
             Result result = executor.executeAll("x='y=z'");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        });
+    }
+
+    @Test
+    public void testStreamsBetweenCommands() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("echo 123 | cat | cat");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+            Assertions.assertEquals(new ArrayList<>(List.of("123")), result.getResult());
+        });
+    }
+
+    @Test
+    public void testStreamsBetweenBinCommands() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("/bin/cat " + temporaryFolder.getPath()
+                    + File.separator + "script.sh" + " | /bin/wc");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+            Assertions.assertEquals(new ArrayList<>(List.of("      3       9      59\n")), result.getResult());
+        });
+    }
+
+    @Test
+    public void testStreamsUnknownCommand() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("echo | something123");
+            Assertions.assertEquals(ExitCode.UNKNOWN_PROBLEM, result.getExitCode());
+        });
+    }
+
+    @Test
+    public void testDifferentQuotes() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("x='quote");
+            Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
+        });
+    }
+
+    @Test
+    public void testQuotesInARow() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("x=\"quote\"'quote'");
             Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         });
     }
