@@ -68,11 +68,7 @@ public class CommandExternal implements AbstractCommand {
             builder.environment().putAll(Environment.getEnvironment());
             Process process = builder.start();
             if (!dynamicArgs.isEmpty()) {
-                OutputStream stdin = process.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
-                writer.write(dynamicArgs.get(0));
-                writer.flush();
-                writer.close();
+                process.getOutputStream().write(dynamicArgs.get(0).getBytes(StandardCharsets.UTF_8));
             }
             output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             if (process.waitFor() != 0) {

@@ -186,35 +186,53 @@ public class Executor {
             boolean wasCommand = false;
             boolean first = true;
             boolean wasSymbol = false;
+            boolean assignmentQuotes = false;
             for (char symbol : currentRequest.toCharArray()) {
                 cut++;
                 if (!wasSymbol && symbol != '|' && symbol != ' ') {
                     wasSymbol = true;
                 }
-                // todo one quote
                 if (symbol == '\'' && !doubleQuote) {
+                    boolean setAssignment = false;
                     if (!singleQuote) {
                         if (prev == '=') {
+                            setAssignment = true;
                             if (currentToken.length() > 0) {
                                 command.add(currentToken.toString());
                             }
                             currentToken.append(symbol);
-                            currentToken = new StringBuilder();
+//                            currentToken = new StringBuilder();
                         }
+                    }
+                    if (assignmentQuotes) {
+                        assignmentQuotes = false;
+                        currentToken.append(symbol);
+                    }
+                    if (setAssignment) {
+                        assignmentQuotes = true;
                     }
                     singleQuote = !singleQuote;
                     prev = symbol;
                     continue;
                 }
                 if (symbol == '\"' && !singleQuote) {
+                    boolean setAssignment = false;
                     if (!doubleQuote) {
                         if (prev == '=') {
+                            setAssignment = true;
                             if (currentToken.length() > 0) {
                                 command.add(currentToken.toString());
                             }
                             currentToken.append(symbol);
-                            currentToken = new StringBuilder();
+//                            currentToken = new StringBuilder();
                         }
+                    }
+                    if (assignmentQuotes) {
+                        assignmentQuotes = false;
+                        currentToken.append(symbol);
+                    }
+                    if (setAssignment) {
+                        assignmentQuotes = true;
                     }
                     doubleQuote = !doubleQuote;
                     prev = symbol;
@@ -233,6 +251,10 @@ public class Executor {
                     break;
                 }
                 if (symbol == ' ') {
+                    if (assignmentQuotes && (prev == '"' || prev == '\'')) {
+                        assignmentQuotes = false;
+                        currentToken.append(symbol);
+                    }
                     if (currentToken.length() > 0) {
                         command.add(currentToken.toString());
                     }
@@ -246,6 +268,9 @@ public class Executor {
                 }
                 if (symbol == '=' && prev != ' ' && !wasAssignment && !wasCommand) {
                     wasAssignment = true;
+                    if (prev == '"' || prev == '\'') {
+                        currentToken.append('"');
+                    }
                     if (currentToken.length() > 0) {
                         command.add(currentToken.toString());
                     }

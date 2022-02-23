@@ -150,13 +150,12 @@ public class ExecutorTest {
     }
 
     @Test
-    @Disabled // todo clarify
     public void testExternalCommandArgumentStream() {
         Assertions.assertDoesNotThrow(() -> {
-            Result result = executor.executeAll("echo olesya | bash"
+            Result result = executor.executeAll("echo olesya | bash "
                     + temporaryFolder.getPath() + File.separator + "script.sh");
             Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-            Assertions.assertEquals(new ArrayList<>(List.of("Hello, olesya")), result.getResult());
+            Assertions.assertEquals(new ArrayList<>(List.of("Hello, \n")), result.getResult());
         });
     }
 
@@ -179,17 +178,16 @@ public class ExecutorTest {
     @Test
     public void testAssignmentQuotesSpacesSuccess() {
         Assertions.assertDoesNotThrow(() -> {
-            Result result = executor.executeAll("x=\"  hello \"");
+            Result result = executor.executeAll("x=\"   hello \"");
             Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         });
     }
 
     @Test
-    @Disabled // todo Кире добавить проверку
     public void testAssignmentVariableInQuotes() {
         Assertions.assertDoesNotThrow(() -> {
             Result result = executor.executeAll("\"x\"=hell");
-            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+            Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
         });
     }
 
@@ -210,6 +208,14 @@ public class ExecutorTest {
                     + temporaryFolder.getPath() + File.separator + "'test_'file.txt");
             Assertions.assertEquals(ExitCode.OK, result.getExitCode());
             Assertions.assertEquals(new ArrayList<>(List.of("some content\n")), result.getResult());
+        });
+    }
+
+    @Test
+    public void testAssignmentToVariableContainingEQ() {
+        Assertions.assertDoesNotThrow(() -> {
+            Result result = executor.executeAll("x='y=z'");
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         });
     }
 }

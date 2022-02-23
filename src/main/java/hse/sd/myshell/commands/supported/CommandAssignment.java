@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Class corresponding to the assignment command.
@@ -21,6 +22,7 @@ public class CommandAssignment implements AbstractCommand {
     private final ArrayList<String> dynamicArgs = new ArrayList<>();
     private final Logger logger;
     private ExitCode exitCode = ExitCode.OK;
+    private final Pattern pattern = Pattern.compile("[a-zA-Z0-9]*");
 
     public CommandAssignment(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
         logger = (new LoggerWithHandler(CommandAssignment.class.getName())).getLogger();
@@ -37,7 +39,13 @@ public class CommandAssignment implements AbstractCommand {
     public void validateStaticArgs(@NotNull ArrayList<String> args) {
         if (args.size() != 2) {
             exitCode = ExitCode.BAD_ARGS;
-            logger.log(Level.WARNING, "More than 2 static arguments in Assignment: " + String.join(", ", args));
+            logger.log(Level.WARNING, "Not 2 static arguments in Assignment: " + String.join(", ", args));
+            return;
+        }
+        String variable = args.get(0);
+        if (!pattern.matcher(variable).matches() || Character.isDigit(variable.charAt(0))) {
+            exitCode = ExitCode.BAD_ARGS;
+            logger.log(Level.WARNING, "Variable format is not supported.");
             return;
         }
         staticArgs = args;
