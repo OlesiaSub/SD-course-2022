@@ -58,11 +58,6 @@ public class ExecutorTest {
     }
 
     @Test
-    public void testSupportedPipesExecution() {
-        // todo : implement after wc files
-    }
-
-    @Test
     public void testPipesWithExternalExecution() {
         Assertions.assertDoesNotThrow(() -> {
             Result result = executor.executeAll("ls | pwd");
