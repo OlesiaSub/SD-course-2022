@@ -13,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class CommandsTest {
     private CommandAssignment assignment;
     private CommandExit exit;
     private CommandExternal outer;
+    private CommandCd cd;
 
     @TempDir
     File temporaryFolder;
@@ -49,6 +51,7 @@ public class CommandsTest {
         } catch (IOException e) {
             System.out.println("Problems with test files");
         }
+        Environment.setCurrentDirectoryPath(Path.of(""));
     }
 
     @Test
@@ -133,7 +136,8 @@ public class CommandsTest {
 
     @Test
     public void testWcStaticArgs() throws MyShellException {
-        wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")), new ArrayList<>());
+        wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")),
+                           new ArrayList<>());
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertEquals(1, result.getResult().size());
@@ -145,7 +149,9 @@ public class CommandsTest {
 
     @Test
     public void testWcBadWhitespaces() throws MyShellException {
-        wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file_bad_whitespaces.txt")), new ArrayList<>());
+        wc = new CommandWc(
+                new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file_bad_whitespaces.txt")),
+                new ArrayList<>());
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertEquals(1, result.getResult().size());
@@ -157,7 +163,8 @@ public class CommandsTest {
 
     @Test
     public void testWcDynamicArgs() throws MyShellException {
-        wc = new CommandWc(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
+        wc = new CommandWc(new ArrayList<>(),
+                           new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertEquals(1, result.getResult().size());
@@ -168,7 +175,9 @@ public class CommandsTest {
 
     @Test
     public void testWcMultipleStaticArgs() throws MyShellException {
-        wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>());
+        wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt",
+                                                   temporaryFolder.getPath() + File.separator + "test_file2.txt")),
+                           new ArrayList<>());
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertEquals(1, result.getResult().size());
@@ -183,14 +192,18 @@ public class CommandsTest {
 
     @Test
     public void testWcMultipleDynamicArgs() throws MyShellException {
-        wc = new CommandWc(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")));
+        wc = new CommandWc(new ArrayList<>(), new ArrayList<>(
+                List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt",
+                        temporaryFolder.getPath() + File.separator + "test_file2.txt")));
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
     }
 
     @Test
     public void testWcDynamicAndStaticArgs() throws MyShellException {
-        wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
+        wc = new CommandWc(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt",
+                                                   temporaryFolder.getPath() + File.separator + "test_file2.txt")),
+                           new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = wc.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertEquals(1, result.getResult().size());
@@ -213,7 +226,8 @@ public class CommandsTest {
 
     @Test
     public void testCatStaticArgs() throws MyShellException {
-        cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")), new ArrayList<>());
+        cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")),
+                             new ArrayList<>());
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertEquals(new ArrayList<>(List.of("content of test file")), result.getResult());
@@ -221,33 +235,43 @@ public class CommandsTest {
 
     @Test
     public void testCatDynamicArgs() throws MyShellException {
-        cat = new CommandCat(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
+        cat = new CommandCat(new ArrayList<>(),
+                             new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")), result.getResult());
+        Assertions.assertEquals(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")),
+                                result.getResult());
     }
 
     @Test
     public void testCatMultipleStaticArgs() throws MyShellException {
-        cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>());
+        cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt",
+                                                     temporaryFolder.getPath() + File.separator + "test_file2.txt")),
+                             new ArrayList<>());
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(new ArrayList<>(List.of("content of test file\nlong content of other test file")), result.getResult());
+        Assertions.assertEquals(new ArrayList<>(List.of("content of test file\nlong content of other test file")),
+                                result.getResult());
     }
 
     @Test
     public void testCatMultipleDynamicArgs() throws MyShellException {
-        cat = new CommandCat(new ArrayList<>(), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")));
+        cat = new CommandCat(new ArrayList<>(), new ArrayList<>(
+                List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt",
+                        temporaryFolder.getPath() + File.separator + "test_file2.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
     }
 
     @Test
     public void testCatDynamicAndStaticArgs() throws MyShellException {
-        cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt", temporaryFolder.getPath() + File.separator + "test_file2.txt")), new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
+        cat = new CommandCat(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt",
+                                                     temporaryFolder.getPath() + File.separator + "test_file2.txt")),
+                             new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "test_file1.txt")));
         Result result = cat.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(new ArrayList<>(List.of("content of test file\nlong content of other test file")), result.getResult());
+        Assertions.assertEquals(new ArrayList<>(List.of("content of test file\nlong content of other test file")),
+                                result.getResult());
     }
 
     @Test
@@ -293,11 +317,13 @@ public class CommandsTest {
 
     @Test
     public void testOuterCommandDir() throws MyShellException {
-        outer = new CommandExternal(new ArrayList<>(List.of("mkdir", temporaryFolder.getPath() + "/dir")), new ArrayList<>());
+        outer = new CommandExternal(new ArrayList<>(List.of("mkdir", temporaryFolder.getPath() + "/dir")),
+                                    new ArrayList<>());
         Result result = outer.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertTrue(new File(temporaryFolder.getPath() + "/dir").exists());
-        outer = new CommandExternal(new ArrayList<>(List.of("rmdir", temporaryFolder.getPath() + "/dir")), new ArrayList<>());
+        outer = new CommandExternal(new ArrayList<>(List.of("rmdir", temporaryFolder.getPath() + "/dir")),
+                                    new ArrayList<>());
         result = outer.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertFalse(new File(temporaryFolder.getPath() + "/dir").exists());
@@ -305,7 +331,8 @@ public class CommandsTest {
 
     @Test
     public void testOuterCommandTouch() throws MyShellException {
-        outer = new CommandExternal(new ArrayList<>(List.of("touch", temporaryFolder.getPath() + "/file.txt")), new ArrayList<>());
+        outer = new CommandExternal(new ArrayList<>(List.of("touch", temporaryFolder.getPath() + "/file.txt")),
+                                    new ArrayList<>());
         Result result = outer.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
         Assertions.assertTrue(new File(temporaryFolder.getPath() + "/file.txt").exists());
@@ -313,8 +340,69 @@ public class CommandsTest {
 
     @Test
     public void testNonExistingOuterCommand() throws MyShellException {
-        outer = new CommandExternal(new ArrayList<>(List.of("команда", temporaryFolder.getPath() + "/file.txt")), new ArrayList<>());
+        outer = new CommandExternal(new ArrayList<>(List.of("команда", temporaryFolder.getPath() + "/file.txt")),
+                                    new ArrayList<>());
         Result result = outer.execute();
         Assertions.assertEquals(ExitCode.UNKNOWN_PROBLEM, result.getExitCode());
+    }
+
+    @Test
+    public void testCdRelative() throws MyShellException {
+        cd = new CommandCd(new ArrayList<>(List.of("..")), new ArrayList<>());
+        Result result = cd.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(
+                Path.of("").toAbsolutePath().getParent(),
+                Environment.getCurrentDirectoryPath().toAbsolutePath().normalize()
+        );
+    }
+
+    @Test
+    public void testCdSameDirectory() throws MyShellException {
+        cd = new CommandCd(new ArrayList<>(List.of(".")), new ArrayList<>());
+        Result result = cd.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(
+                Path.of("").toAbsolutePath(),
+                Environment.getCurrentDirectoryPath().toAbsolutePath().normalize()
+        );
+    }
+
+    @Test
+    public void testCdAbsolute() throws MyShellException {
+        cd = new CommandCd(new ArrayList<>(List.of(temporaryFolder.getPath())), new ArrayList<>());
+        Result result = cd.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(Path.of(temporaryFolder.getPath()), Environment.getCurrentDirectoryPath());
+    }
+
+    @Test
+    public void testCdNoArgs() throws MyShellException {
+        cd = new CommandCd(new ArrayList<>(), new ArrayList<>());
+        Result result = cd.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(Path.of(System.getProperty("user.home")), Environment.getCurrentDirectoryPath());
+    }
+
+    @Test
+    public void testCdTooManyArgs() throws MyShellException {
+        cd = new CommandCd(new ArrayList<>(List.of(".", ".")), new ArrayList<>());
+        Result result = cd.execute();
+        Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
+    }
+
+    @Test
+    public void testCdDirectoryNotExists() throws MyShellException {
+        cd = new CommandCd(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "nonexistent")),
+                           new ArrayList<>());
+        Result result = cd.execute();
+        Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
+    }
+
+    @Test
+    public void testCdBadPath() throws MyShellException {
+        cd = new CommandCd(new ArrayList<>(List.of("?\0/*")), new ArrayList<>());
+        Result result = cd.execute();
+        Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
     }
 }
