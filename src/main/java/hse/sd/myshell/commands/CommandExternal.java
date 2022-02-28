@@ -63,7 +63,7 @@ public class CommandExternal implements AbstractCommand {
         String output = "";
         try {
             ProcessBuilder builder = new ProcessBuilder(staticArgs);
-            builder.directory(new File(System.getProperty("user.dir")));
+            builder.directory(Environment.getCurrentDirectoryPath().toFile());
             builder.redirectError(ProcessBuilder.Redirect.INHERIT);
             builder.environment().putAll(Environment.getEnvironment());
             Process process = builder.start();
