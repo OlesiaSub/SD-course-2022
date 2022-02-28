@@ -13,9 +13,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CommandsTest {
     private CommandEcho echo;
@@ -26,6 +28,7 @@ public class CommandsTest {
     private CommandExit exit;
     private CommandExternal outer;
     private CommandCd cd;
+    private CommandLs ls;
 
     @TempDir
     File temporaryFolder;
@@ -351,10 +354,7 @@ public class CommandsTest {
         cd = new CommandCd(new ArrayList<>(List.of("..")), new ArrayList<>());
         Result result = cd.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(
-                Path.of("").toAbsolutePath().getParent(),
-                Environment.getCurrentDirectoryPath().toAbsolutePath().normalize()
-        );
+        Assertions.assertEquals(Path.of("").toAbsolutePath().getParent(), Environment.getCurrentDirectoryPath());
     }
 
     @Test
@@ -362,10 +362,7 @@ public class CommandsTest {
         cd = new CommandCd(new ArrayList<>(List.of(".")), new ArrayList<>());
         Result result = cd.execute();
         Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(
-                Path.of("").toAbsolutePath(),
-                Environment.getCurrentDirectoryPath().toAbsolutePath().normalize()
-        );
+        Assertions.assertEquals(Path.of("").toAbsolutePath(), Environment.getCurrentDirectoryPath());
     }
 
     @Test
@@ -405,4 +402,83 @@ public class CommandsTest {
         Result result = cd.execute();
         Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
     }
+
+    @Test
+    public void testLsStaticArgsAbsolute() throws MyShellException {
+        ls = new CommandLs(new ArrayList<>(List.of(temporaryFolder.getPath())), new ArrayList<>());
+        Result result = ls.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(List.of("test_file1.txt  test_file2.txt  test_file_bad_whitespaces.txt"),
+                                result.getResult());
+    }
+
+    @Test
+    public void testLsStaticArgsRelative() throws MyShellException {
+        Path tempDirectoryRelativePath = Path.of("").toAbsolutePath().relativize(
+                Path.of(temporaryFolder.getPath()));
+        ls = new CommandLs(new ArrayList<>(List.of(tempDirectoryRelativePath.toString())),
+                           new ArrayList<>());
+        Result result = ls.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(List.of("test_file1.txt  test_file2.txt  test_file_bad_whitespaces.txt"),
+                                result.getResult());
+    }
+
+    @Test
+    public void testLsNoArgs() throws MyShellException, IOException {
+        ls = new CommandLs(new ArrayList<>(), new ArrayList<>());
+        Result result = ls.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Path current = Path.of("");
+        Assertions.assertEquals(List.of(Files.list(current)
+                                                .map(Path::toString)
+                                                .sorted()
+                                                .collect(Collectors.joining("  "))), result.getResult());
+    }
+
+    @Test
+    public void testLsEmptyDirectory() throws MyShellException, IOException {
+        Path tempEmptyDirectory = Path.of(temporaryFolder.getPath()).resolve("emptyDir");
+        Files.createDirectory(tempEmptyDirectory);
+        ls = new CommandLs(new ArrayList<>(List.of(tempEmptyDirectory.toString())), new ArrayList<>());
+        Result result = ls.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(List.of(""), result.getResult());
+    }
+
+    @Test
+    public void testLsFancyPath() throws MyShellException {
+        Path fancyPathToTemp = Path.of(temporaryFolder.getPath())
+                .resolve("emptyDir").resolve("..");
+        ls = new CommandLs(new ArrayList<>(List.of(fancyPathToTemp.toString())), new ArrayList<>());
+        Result result = ls.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(List.of("test_file1.txt  test_file2.txt  test_file_bad_whitespaces.txt"),
+                                result.getResult());
+    }
+
+    @Test
+    public void testLsFile() throws MyShellException {
+        String file = temporaryFolder + File.separator + "test_file1.txt";
+        ls = new CommandLs(new ArrayList<>(List.of(file)), new ArrayList<>());
+        Result result = ls.execute();
+        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+        Assertions.assertEquals(List.of(file), result.getResult());
+    }
+
+    @Test
+    public void testLsTooManyArgs() throws MyShellException {
+        ls = new CommandLs(new ArrayList<>(List.of(".", "..")), new ArrayList<>());
+        Result result = ls.execute();
+        Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
+    }
+
+    @Test
+    public void testLsDirectoryNotExists() throws MyShellException {
+        ls = new CommandLs(new ArrayList<>(List.of(temporaryFolder.getPath() + File.separator + "nonexistent")),
+                           new ArrayList<>());
+        Result result = ls.execute();
+        Assertions.assertEquals(ExitCode.BAD_ARGS, result.getExitCode());
+    }
+
 }

@@ -14,7 +14,7 @@ import java.util.Objects;
  */
 public class Environment {
     private static final HashMap<String, String> variables = new HashMap<>();
-    private static Path currentDirectoryPath = Paths.get("");
+    private static Path currentDirectoryPath = Paths.get("").toAbsolutePath().normalize();
 
     /**
      * @param variable requested variable name
@@ -54,21 +54,24 @@ public class Environment {
     }
 
     /**
-     * @param newCurrentDirectoryPath new current directory path
+     * Sets [currentDirectoryPath] to absolute normalized version of [newCurrentDirectoryPath].
+     *
+     * @param newCurrentDirectoryPath new current directory path, can be absolute or relative
      */
     public static void setCurrentDirectoryPath(@NotNull Path newCurrentDirectoryPath) {
         Objects.requireNonNull(newCurrentDirectoryPath);
-        currentDirectoryPath = newCurrentDirectoryPath;
+        currentDirectoryPath = newCurrentDirectoryPath.toAbsolutePath().normalize();
     }
 
     /**
-     * @param path path to resolve in current directory, can be absolute
-     * @return path either resolved in current directory or absolute, or null if path is invalid
+     * @param path path to resolve in current directory, can be absolute or relative
+     * @return normalized absolute path either resolved in current directory if it is not absolute or itself,
+     * or null if path is invalid
      */
     public static @Nullable Path resolvePathInCurrentDirectory(@NotNull String path) {
         Objects.requireNonNull(path);
         try {
-            return currentDirectoryPath.resolve(path);
+            return currentDirectoryPath.resolve(path).toAbsolutePath().normalize();
         } catch (InvalidPathException e) {
             return null;
         }
