@@ -1,12 +1,20 @@
 package hse.sd.myshell;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
- * Class, which contains information about assigned variables
+ * Class, which contains information about assigned variables and current directory path
  */
 public class Environment {
     private static final HashMap<String, String> variables = new HashMap<>();
+    private static Path currentDirectoryPath = Paths.get("");
 
     /**
      * @param variable requested variable name
@@ -37,4 +45,33 @@ public class Environment {
     public static HashMap<String, String> getEnvironment() {
         return variables;
     }
+
+    /**
+     * @return current directory path
+     */
+    public static @NotNull Path getCurrentDirectoryPath() {
+        return currentDirectoryPath;
+    }
+
+    /**
+     * @param newCurrentDirectoryPath new current directory path
+     */
+    public static void setCurrentDirectoryPath(@NotNull Path newCurrentDirectoryPath) {
+        Objects.requireNonNull(newCurrentDirectoryPath);
+        currentDirectoryPath = newCurrentDirectoryPath;
+    }
+
+    /**
+     * @param path path to resolve in current directory, can be absolute
+     * @return path either resolved in current directory or absolute, or null if path is invalid
+     */
+    public static @Nullable Path resolvePathInCurrentDirectory(@NotNull String path) {
+        Objects.requireNonNull(path);
+        try {
+            return currentDirectoryPath.resolve(path);
+        } catch (InvalidPathException e) {
+            return null;
+        }
+    }
+
 }
