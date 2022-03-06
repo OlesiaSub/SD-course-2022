@@ -37,9 +37,8 @@ public class IntegrationTest {
     }
 
     @Test
-    public void testChangeCurrentDirectoryCommands() {
+    public void testChangeCurrentDirectoryCommands() throws IOException {
         boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-        System.out.println(System.getProperty("os.name") + " //// " + isWindows);
         String shell = isWindows ? "cmd /c" : "bash -c";
         String tempName = "tmp-myshell-folder-" + System.currentTimeMillis();
         String absoluteName = Path.of("").toAbsolutePath() + File.separator + tempName;
@@ -58,18 +57,9 @@ public class IntegrationTest {
                         :
                         ">> \n>> >> \n>> file1\n>> hello\n\n>> 1 1 6 " + absoluteName + "\\file1\n\n>> " + absoluteName + "\n>> \n>> file1  file2\n");
         MyShell.run();
-        try {
-            Files.delete(Path.of(tempName + "/file1"));
-        } catch (IOException ignored) {
-        }
-        try {
-            Files.delete(Path.of(tempName + "/file2"));
-        } catch (IOException ignored) {
-        }
-        try {
-            Files.delete(Path.of(tempName));
-        } catch (IOException ignored) {
-        }
+        Files.delete(Path.of(tempName + "/file1"));
+        Files.delete(Path.of(tempName + "/file2"));
+        Files.delete(Path.of(tempName));
     }
 
 }
