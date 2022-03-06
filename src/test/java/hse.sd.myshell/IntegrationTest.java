@@ -4,14 +4,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class IntegrationTest {
 
@@ -29,7 +27,7 @@ public class IntegrationTest {
 
     @AfterEach
     public void checkStreams() {
-        Assertions.assertEquals(expectedOutput, testOut.toString(CHARSET));
+        Assertions.assertEquals(expectedOutput, testOut.toString(CHARSET).replace("\r\n", "\n"));
     }
 
     @Test
@@ -39,24 +37,39 @@ public class IntegrationTest {
     }
 
     @Test
-    public void testChangeCurrentDirectoryCommands() throws IOException {
+    public void testChangeCurrentDirectoryCommands() {
+        boolean isWindows = System.getProperty("os.name").startsWith("Windows");
+        System.out.println(System.getProperty("os.name") + " //// " + isWindows);
+        String shell = isWindows ? "cmd /c" : "bash -c";
         String tempName = "tmp-myshell-folder-" + System.currentTimeMillis();
-        String absoluteName = Path.of("").toAbsolutePath() + "/" + tempName;
+        String absoluteName = Path.of("").toAbsolutePath() + File.separator + tempName;
         redirectStdStreams(
-                "mkdir " + tempName + "\n" +
+                shell + " 'mkdir " + tempName + "'\n" +
                         "cd " + tempName + "\n" +
-                        "bash -c 'echo hello > file1'\n" +
+                        shell + " 'echo hello > file1'\n" +
                         "ls\n" +
                         "cat file1\n" +
                         "wc file1\n" +
                         "pwd\n" +
-                        "touch file2\n" +
+                        (isWindows ? shell + " 'echo.> file2'\n" : "touch file2\n") +
                         "ls\n",
-                ">> \n>> >> \n>> file1\n>> hello\n\n>> 1 1 6 " + absoluteName + "/file1\n\n>> " + absoluteName + "\n>> \n>> file1  file2\n");
+                isWindows ?
+                        ">> \n>> >> \n>> file1\n>> hello \n\n>> 1 1 8 " + absoluteName + "\\file1\n\n>> " + absoluteName + "\n>> \n>> file1  file2\n"
+                        :
+                        ">> \n>> >> \n>> file1\n>> hello\n\n>> 1 1 6 " + absoluteName + "\\file1\n\n>> " + absoluteName + "\n>> \n>> file1  file2\n");
         MyShell.run();
-        Files.delete(Path.of(tempName + "/file1"));
-        Files.delete(Path.of(tempName + "/file2"));
-        Files.delete(Path.of(tempName));
+        try {
+            Files.delete(Path.of(tempName + "/file1"));
+        } catch (IOException ignored) {
+        }
+        try {
+            Files.delete(Path.of(tempName + "/file2"));
+        } catch (IOException ignored) {
+        }
+        try {
+            Files.delete(Path.of(tempName));
+        } catch (IOException ignored) {
+        }
     }
 
 }
