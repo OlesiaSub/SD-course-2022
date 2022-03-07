@@ -413,15 +413,25 @@ public class CommandsTest {
     }
 
     @Test
-    public void testLsStaticArgsRelative() throws MyShellException {
-        Path tempDirectoryRelativePath = Path.of("").toAbsolutePath().relativize(
-                Path.of(temporaryFolder.getPath()));
-        ls = new CommandLs(new ArrayList<>(List.of(tempDirectoryRelativePath.toString())),
-                           new ArrayList<>());
-        Result result = ls.execute();
-        Assertions.assertEquals(ExitCode.OK, result.getExitCode());
-        Assertions.assertEquals(List.of("test_file1.txt  test_file2.txt  test_file_bad_whitespaces.txt"),
-                                result.getResult());
+    public void testLsStaticArgsRelative() throws MyShellException, IOException {
+        File testSubfolder = new File("my-shell-test-temp-directory-ls");
+        File fileInTestSubfolder = new File(testSubfolder.toPath().resolve("test_file_ls.txt").toString());
+        try {
+            Assertions.assertTrue(testSubfolder.mkdirs());
+            Assertions.assertTrue(fileInTestSubfolder.createNewFile());
+
+            Path testSubfolderRelativePath = Path.of("").relativize(testSubfolder.toPath());
+            System.out.println(testSubfolderRelativePath);
+            ls = new CommandLs(new ArrayList<>(List.of(testSubfolderRelativePath.toString())),
+                               new ArrayList<>());
+            Result result = ls.execute();
+            Assertions.assertEquals(ExitCode.OK, result.getExitCode());
+            Assertions.assertEquals(List.of("test_file_ls.txt"),
+                                    result.getResult());
+        } finally {
+            Files.delete(fileInTestSubfolder.toPath());
+            Files.delete(testSubfolder.toPath());
+        }
     }
 
     @Test
