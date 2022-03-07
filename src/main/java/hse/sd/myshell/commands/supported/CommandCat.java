@@ -42,7 +42,7 @@ public class CommandCat implements AbstractCommand {
         staticArgs = new ArrayList<>();
         for (String file : args) {
             Path path = Environment.resolvePathInCurrentDirectory(file);
-            if(path == null) {
+            if (path == null) {
                 logger.log(Level.WARNING, "Invalid path: " + file);
                 exitCode = ExitCode.BAD_ARGS;
                 return;
