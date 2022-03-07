@@ -51,10 +51,11 @@ public class IntegrationTest {
                         "pwd\n" +
                         (isWindows ? shell + " 'echo.> file2'\n" : "touch file2\n") +
                         "ls\n",
-                isWindows ?
-                        ">> \n>> >> \n>> file1\n>> hello \n\n>> 1 1 8 " + absoluteName + File.separator + "file1\n\n>> " + absoluteName + "\n>> \n>> file1  file2\n"
+                (isWindows ?
+                        ">> \n>> >> \n>> file1\n>> hello \n\n>> 1 1 8 "
                         :
-                        ">> \n>> >> \n>> file1\n>> hello\n\n>> 1 1 6 " + absoluteName + File.separator + "file1\n\n>> " + absoluteName + "\n>> \n>> file1  file2\n");
+                        ">> \n>> >> \n>> file1\n>> hello\n\n>> 1 1 6 ")
+                        + absoluteName + File.separator + "file1\n\n>> " + absoluteName + "\n>> \n>> file1  file2\n");
         MyShell.run();
         Files.delete(Path.of(tempName + "/file1"));
         Files.delete(Path.of(tempName + "/file2"));
