@@ -9,7 +9,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 
 public class IntegrationTest {
 
@@ -53,9 +52,9 @@ public class IntegrationTest {
                         (isWindows ? shell + " 'echo.> file2'\n" : "touch file2\n") +
                         "ls\n",
                 isWindows ?
-                        ">> \n>> >> \n>> file1\n>> hello \n\n>> 1 1 8 " + absoluteName + "\\file1\n\n>> " + absoluteName + "\n>> \n>> file1  file2\n"
+                        ">> \n>> >> \n>> file1\n>> hello \n\n>> 1 1 8 " + absoluteName + File.separator + "file1\n\n>> " + absoluteName + "\n>> \n>> file1  file2\n"
                         :
-                        ">> \n>> >> \n>> file1\n>> hello\n\n>> 1 1 6 " + absoluteName + "\\file1\n\n>> " + absoluteName + "\n>> \n>> file1  file2\n");
+                        ">> \n>> >> \n>> file1\n>> hello\n\n>> 1 1 6 " + absoluteName + File.separator + "file1\n\n>> " + absoluteName + "\n>> \n>> file1  file2\n");
         MyShell.run();
         Files.delete(Path.of(tempName + "/file1"));
         Files.delete(Path.of(tempName + "/file2"));
