@@ -1,5 +1,6 @@
 package hse.sd.myshell.commands.supported;
 
+import hse.sd.myshell.Environment;
 import hse.sd.myshell.LoggerWithHandler;
 import hse.sd.myshell.MyShellException;
 import hse.sd.myshell.commands.AbstractCommand;
@@ -22,7 +23,8 @@ public class CommandPwd implements AbstractCommand {
     private final Logger logger;
     private ExitCode exitCode = ExitCode.OK;
 
-    public CommandPwd(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
+    public CommandPwd(
+            @NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
         logger = (new LoggerWithHandler(CommandPwd.class.getName())).getLogger();
     }
 
@@ -47,6 +49,7 @@ public class CommandPwd implements AbstractCommand {
     @Override
     @NotNull
     public Result execute() {
-        return new Result(new ArrayList<>(Collections.singleton(System.getProperty("user.dir"))), exitCode);
+        return new Result(new ArrayList<>(Collections.singleton(Environment.getCurrentDirectoryPath().toString())),
+                          exitCode);
     }
 }

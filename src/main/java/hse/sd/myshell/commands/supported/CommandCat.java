@@ -1,9 +1,9 @@
 package hse.sd.myshell.commands.supported;
 
+import hse.sd.myshell.Environment;
 import hse.sd.myshell.LoggerWithHandler;
 import hse.sd.myshell.MyShellException;
 import hse.sd.myshell.commands.AbstractCommand;
-import hse.sd.myshell.commands.CommandExternal;
 import hse.sd.myshell.commands.ExitCode;
 import hse.sd.myshell.commands.Result;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -40,7 +41,13 @@ public class CommandCat implements AbstractCommand {
     public void validateStaticArgs(@NotNull ArrayList<String> args) {
         staticArgs = new ArrayList<>();
         for (String file : args) {
-            File f = new File(file);
+            Path path = Environment.resolvePathInCurrentDirectory(file);
+            if (path == null) {
+                logger.log(Level.WARNING, "Invalid path: " + file);
+                exitCode = ExitCode.BAD_ARGS;
+                return;
+            }
+            File f = path.toFile();
             if (!f.exists() || f.isDirectory()) {
                 logger.log(Level.WARNING, "File does not exist: " + file);
                 exitCode = ExitCode.BAD_ARGS;

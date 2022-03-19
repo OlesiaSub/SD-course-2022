@@ -1,5 +1,6 @@
 package hse.sd.myshell.commands.supported;
 
+import hse.sd.myshell.Environment;
 import hse.sd.myshell.LoggerWithHandler;
 import hse.sd.myshell.MyShellException;
 import hse.sd.myshell.commands.AbstractCommand;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -25,7 +27,8 @@ public class CommandWc implements AbstractCommand {
     private ExitCode exitCode = ExitCode.OK;
     private final Logger logger;
 
-    public CommandWc(@NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
+    public CommandWc(
+            @NotNull ArrayList<String> staticArgs, @NotNull ArrayList<String> dynamicArgs) throws MyShellException {
         logger = (new LoggerWithHandler(CommandWc.class.getName())).getLogger();
         validateStaticArgs(staticArgs);
         validateDynamicArgs(dynamicArgs);
@@ -40,7 +43,13 @@ public class CommandWc implements AbstractCommand {
     public void validateStaticArgs(@NotNull ArrayList<String> args) {
         staticArgs = new ArrayList<>();
         for (String file : args) {
-            File f = new File(file);
+            Path path = Environment.resolvePathInCurrentDirectory(file);
+            if (path == null) {
+                logger.log(Level.WARNING, "Invalid path: " + file);
+                exitCode = ExitCode.BAD_ARGS;
+                return;
+            }
+            File f = path.toFile();
             if (!f.exists() || f.isDirectory()) {
                 logger.log(Level.WARNING, "File does not exist: " + file);
                 exitCode = ExitCode.BAD_ARGS;
@@ -77,7 +86,8 @@ public class CommandWc implements AbstractCommand {
             for (File file : staticArgs) {
                 try {
                     String content = readString(file.toPath());
-                    result.append(content.lines().count() + " " + content.replaceAll("\\s+", " ").trim().split(" ").length + " " + content.getBytes().length + " " + file.getPath() + "\n");
+                    result.append(content.lines().count() + " " + content.replaceAll("\\s+", " ").trim().split(
+                            " ").length + " " + content.getBytes().length + " " + file.getPath() + "\n");
                 } catch (IOException e) {
                     exitCode = ExitCode.UNKNOWN_PROBLEM;
                     logger.log(Level.WARNING, "Unknown problem with file: " + e.getMessage());
@@ -85,7 +95,8 @@ public class CommandWc implements AbstractCommand {
             }
         } else {
             for (String string : dynamicArgs) {
-                result.append(string.lines().count() + " " + string.replaceAll("\\s+", " ").trim().split(" ").length + " " + string.getBytes().length + "\n");
+                result.append(string.lines().count() + " " + string.replaceAll("\\s+", " ").trim().split(
+                        " ").length + " " + string.getBytes().length + "\n");
             }
         }
         return new Result(new ArrayList<>(Collections.singleton(result.toString().trim() + "\n")), exitCode);

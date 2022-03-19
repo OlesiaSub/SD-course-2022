@@ -24,10 +24,8 @@ public class MyShell {
      * MyShell launcher, takes user's input, launches Preprocessing and transfers its result to Executor
      * Processes output and exit code of the last executed command
      * Finishes execution in case of either ctrl+D input or exit command
-     *
-     * @param args will be ignored by the application
      */
-    public static void main(String[] args) {
+    public static int run() {
         System.out.println("Staring MyShell...");
         Scanner scanner = new Scanner(System.in);
         scanner.useDelimiter("\n");
@@ -55,7 +53,7 @@ public class MyShell {
                 }
                 if (output.getExitCode() == ExitCode.EXIT) {
                     System.out.println("Exiting MyShell...");
-                    System.exit(0);
+                    return 0;
                 }
                 for (String res : output.getResult()) {
                     System.out.println(res);
@@ -65,5 +63,15 @@ public class MyShell {
             logger.log(Level.WARNING, e.getMessage());
             System.out.println(e.getMessage());
         }
+        return 1;
+    }
+
+    /**
+     * Wraps run() to be launched from console
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        System.exit(run());
     }
 }
