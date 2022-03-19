@@ -153,7 +153,7 @@ public class ExecutorTest {
 
     @Test
     public void testExternalCommandArgumentStream() { // TODO: failing on Windows
-        if(isWindows) return;
+        if (isWindows) return;
         Assertions.assertDoesNotThrow(() -> {
             Result result = executor.executeAll("echo olesya | bash "
                     + temporaryFolder.getPath() + File.separator + "script.sh");
